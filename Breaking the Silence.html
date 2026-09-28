@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Reporta cobros indebidos y abusos policiales en todo el Perú de forma rápida, segura y confidencial.">
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Breaking the Silence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+
+  tailwind.config = {
+    theme: { extend: {
+      colors: { brand: {
+        blue:'#2563EB','blue-bright':'#60A5FA', purple:'#7C3AED','purple-bright':'#A78BFA',
+        neon:'#10B981','neon-bright':'#34D399', glow:'#00FF87', dark:'#0B0F19', ink:'#0F172A', slate:'#1E293B' } },
+      fontFamily: { sans:['Inter','Segoe UI','system-ui','sans-serif'] },
+      animation: { 'pulse-glow':'pulseGlow 2.2s infinite' },
+      keyframes: { pulseGlow:{
+        '0%,100%':{ boxShadow:'0 0 18px rgba(0,255,135,.45),0 0 40px rgba(124,58,237,.25)' },
+        '50%':{ boxShadow:'0 0 34px rgba(0,255,135,.85),0 0 64px rgba(37,99,235,.5)' } } }
+    } }
+  }
+</script>
+<style>
+  :root{color-scheme:dark}
+  html{scroll-behavior:smooth}
+  body{background:#0B0F19;color:#E2E8F0;font-family:'Inter','Segoe UI',system-ui,sans-serif;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(60vw 45vh at 0% 0%,rgba(37,99,235,.22),transparent 70%),
+               radial-gradient(55vw 45vh at 100% 20%,rgba(124,58,237,.22),transparent 70%),
+               radial-gradient(50vw 40vh at 40% 100%,rgba(16,185,129,.1),transparent 70%),#0B0F19}
+  :focus-visible{outline:2px solid #00FF87;outline-offset:3px;border-radius:10px}
+  .glass-panel{background:rgba(17,24,39,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(124,58,237,.28);
+    box-shadow:0 24px 60px -24px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06)}
+  .glass-card{background:rgba(15,23,42,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08);transition:.25s}
+  .glass-card:hover{border-color:rgba(52,211,153,.45);box-shadow:0 0 28px rgba(16,185,129,.15)}
+  .gradient-text{background:linear-gradient(135deg,#60A5FA 0%,#A78BFA 50%,#34D399 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 24px rgba(0,255,135,.25))}
+  .btn-neon{background:linear-gradient(135deg,#00FF87,#10B981);color:#03140C;transition:transform .2s,box-shadow .2s}
+  .btn-neon:hover{transform:translateY(-2px) scale(1.02)}
+  .btn-neon:active{transform:scale(.98)}
+  .btn-neon[disabled]{filter:saturate(.6);cursor:progress}
+  .sect{background:rgba(15,23,42,.55);border:1px solid rgba(148,163,184,.14);border-radius:1rem;padding:1.1rem}
+  .inp{width:100%;background:#060A14;border:1px solid #334155;border-radius:.85rem;padding:.8rem .95rem;font-size:16px;color:#F1F5F9;transition:.2s;color-scheme:dark}
+  .inp::placeholder{color:#64748B}
+  .inp:hover{border-color:rgba(124,58,237,.7)}
+  .inp:focus{outline:none;border-color:#00FF87;box-shadow:0 0 0 3px rgba(0,255,135,.16),0 0 18px rgba(0,255,135,.15)}
+  .bad .inp{border-color:#F43F5E;box-shadow:0 0 0 3px rgba(244,63,94,.14)}
+  .ok .inp{border-color:rgba(0,255,135,.5)}
+  .err{display:none;font-size:12.5px;color:#FB7185;margin-top:6px}
+  .bad .err{display:block}
+  .lbl{display:block;font-size:12px;color:#94A3B8;margin-bottom:6px}
+  .veh input{position:absolute;opacity:0}
+  .veh .box{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border-radius:.9rem;background:#060A14;border:1px solid #1E293B;color:#94A3B8;font-size:12.5px;font-weight:600;transition:.2s;cursor:pointer;text-align:center}
+  .veh .box:hover{border-color:#7C3AED;color:#fff;box-shadow:0 0 18px rgba(124,58,237,.45);transform:translateY(-2px)}
+  .veh input:checked + .box{border-color:#00FF87;color:#00FF87;background:linear-gradient(160deg,rgba(37,99,235,.28),rgba(124,58,237,.28));box-shadow:0 0 22px rgba(0,255,135,.3)}
+  .veh input:focus-visible + .box{outline:2px solid #00FF87;outline-offset:3px}
+  .bad .veh .box{border-color:rgba(244,63,94,.6)}
+  .pill{font-size:12px;padding:6px 12px;border-radius:.6rem;background:#060A14;border:1px solid #1E293B;color:#CBD5E1;transition:.2s}
+  .pill:hover{border-color:#00FF87;color:#fff;box-shadow:0 0 14px rgba(0,255,135,.3)}
+  .drop{border:2px dashed rgba(124,58,237,.55);border-radius:1rem;padding:1.4rem 1rem;text-align:center;cursor:pointer;background:rgba(6,10,20,.5);transition:.2s;display:block}
+  .drop:hover,.drop.over{border-color:#00FF87;background:rgba(16,185,129,.08);box-shadow:0 0 26px rgba(0,255,135,.18)}
+  .sw{width:48px;height:27px;border-radius:999px;background:#334155;position:relative;transition:.25s;flex:none;display:block}
+  .sw::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:.25s}
+  #anon:checked + .sw{background:#10B981;box-shadow:0 0 16px #00FF87}
+  #anon:checked + .sw::after{transform:translateX(21px)}
+  #anon:focus-visible + .sw{outline:2px solid #00FF87;outline-offset:3px}
+  .meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2563EB,#7C3AED,#00FF87);box-shadow:0 0 10px #00FF87;transition:width .35s}
+  .seg button{padding:.5rem 1rem;border-radius:.65rem;font-size:13px;font-weight:600;color:#94A3B8;transition:.2s}
+  .seg button:hover{color:#fff}
+  .seg button[aria-pressed=true]{color:#fff;background:linear-gradient(135deg,#2563EB,#7C3AED);box-shadow:0 0 16px rgba(124,58,237,.7)}
+  .mapbox canvas{width:100%;height:100%;display:block;touch-action:pan-y}
+  .tip{position:absolute;pointer-events:none;padding:8px 12px;border-radius:12px;font-size:13px;white-space:nowrap;z-index:3;transform:translate(-50%,-130%);
+    background:rgba(15,23,42,.94);border:1px solid rgba(124,58,237,.5);box-shadow:0 0 20px rgba(124,58,237,.5);opacity:0;transition:opacity .15s}
+  .tip.on{opacity:1}
+  details.faq{transition:.25s}
+  details.faq[open]{border-color:rgba(37,99,235,.65);box-shadow:0 0 30px rgba(37,99,235,.25)}
+  details.faq summary{list-style:none;cursor:pointer}
+  details.faq summary::-webkit-details-marker{display:none}
+  details.faq .pm{transition:transform .25s}
+  details.faq[open] .pm{transform:rotate(45deg);color:#00FF87}
+  .dot{width:8px;height:8px;border-radius:50%;background:#00FF87;animation:dotp 1.8s infinite;flex:none}
+  @keyframes dotp{0%{box-shadow:0 0 0 0 rgba(0,255,135,.7)}70%{box-shadow:0 0 0 9px rgba(0,255,135,0)}100%{box-shadow:0 0 0 0 rgba(0,255,135,0)}}
+  .spin{width:20px;height:20px;border-radius:50%;border:3px solid rgba(3,20,12,.25);border-top-color:#03140C;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:100;transform:translate(-50%,160%);display:flex;align-items:center;gap:12px;
+    padding:14px 18px;border-radius:16px;max-width:calc(100vw - 32px);font-size:14px;font-weight:600;line-height:1.35;color:#F1F5F9;background:rgba(15,23,42,.96);
+    border:1px solid rgba(0,255,135,.6);box-shadow:0 0 30px rgba(0,255,135,.3),0 20px 40px -10px rgba(0,0,0,.7);transition:transform .45s cubic-bezier(.2,1.2,.3,1)}
+  .toast.on{transform:translate(-50%,0)}
+  .toast.bad{border-color:#F43F5E;box-shadow:0 0 30px rgba(244,63,94,.3),0 20px 40px -10px rgba(0,0,0,.7)}
+  .toast .ic{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#10B981;color:#03140C;font-weight:900}
+  .toast.bad .ic{background:#F43F5E;color:#fff}
+  .check circle{stroke:#00FF87;stroke-width:3;fill:rgba(0,255,135,.08);stroke-dasharray:264;stroke-dashoffset:264;animation:dr .7s .1s forwards}
+  .check path{stroke:#00FF87;stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:dr .5s .7s forwards}
+  @keyframes dr{to{stroke-dashoffset:0}}
+  ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:#0B0F19}::-webkit-scrollbar-thumb{background:#1F2937;border-radius:4px}::-webkit-scrollbar-thumb:hover{background:#7C3AED}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
+
+</head>
+<body>
+
+<header class="sticky z-50 glass-panel border-x-0 border-t-0 px-4 lg:px-8 py-3" style="top:env(safe-area-inset-top,0px)">
+  <div class="max-w-7xl mx-auto flex items-center justify-between gap-3 flex-wrap">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-tr from-brand-blue via-brand-purple to-brand-neon p-0.5 shadow-lg shadow-purple-500/30">
+        <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center text-brand-glow"><i data-i="shield-alert" class="w-5 h-5"></i></div>
+      </div>
+      <div class="min-w-0">
+        <p class="font-black text-lg sm:text-xl tracking-tight text-white leading-tight truncate">Breaking the Silence</p>
+        <p class="text-xs text-slate-400 font-medium truncate">Powered by <span class="text-slate-200 font-semibold">Vanguardia Ciudadana</span></p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 sm:gap-3 ml-auto">
+      <span class="hidden lg:inline-flex items-center gap-2 text-xs font-semibold text-brand-glow bg-brand-neon/10 border border-brand-glow/40 rounded-full px-3 py-1.5 shadow-[0_0_16px_rgba(0,255,135,.18)]" role="status"><i class="dot"></i>Conexión Cifrada &amp; Anónima Activa</span>
+      <a href="#stats" class="hidden md:flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-brand-glow px-3 py-2 rounded-lg hover:bg-slate-800/60 transition"><i data-i="map-pin" class="w-4 h-4"></i>Mapa y cifras</a>
+      <a href="#faq" class="hidden md:flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-brand-glow px-3 py-2 rounded-lg hover:bg-slate-800/60 transition"><i data-i="help" class="w-4 h-4"></i>Seguridad</a>
+      <button id="exitBtn" type="button" title="Salir a Google (o pulsa Esc dos veces)" class="flex items-center gap-1.5 text-xs font-bold text-rose-300 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/50 px-3 py-2 rounded-xl transition active:scale-95 hover:shadow-[0_0_16px_rgba(244,63,94,.4)]">
+        <i data-i="power" class="w-4 h-4"></i><span>Salida de emergencia</span>
+      </button>
+    </div>
+    <span class="lg:hidden w-full inline-flex items-center justify-center gap-2 text-xs font-semibold text-brand-glow bg-brand-neon/10 border border-brand-glow/40 rounded-full px-3 py-1.5" role="status"><i class="dot"></i>Conexión Cifrada &amp; Anónima Activa</span>
+  </div>
+</header>
+
+<main>
+
+<section class="relative overflow-hidden px-4 sm:px-6 lg:px-8 pt-14 pb-14 lg:pt-24 lg:pb-20 border-b border-slate-800/70">
+  <div class="relative z-10 max-w-4xl mx-auto text-center space-y-6">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-brand-neon/30 text-brand-neon-bright text-xs font-semibold">
+      <i data-i="lock" class="w-3.5 h-3.5"></i><span>Sin cuentas · Sin nombre · Sin teléfono</span>
+    </div>
+    <h1 class="text-[2.6rem] leading-[1.02] sm:text-6xl lg:text-7xl font-black tracking-tight"><span class="gradient-text">Breaking the Silence</span></h1>
+    <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+      Reporta cobros indebidos y abusos policiales de forma <span class="text-brand-neon-bright font-semibold">rápida</span>, <span class="text-brand-blue-bright font-semibold">segura</span> y <span class="text-brand-purple-bright font-semibold">100% confidencial</span>.
+    </p>
+    <div class="inline-flex items-center gap-2 text-xs text-slate-400 bg-slate-900/60 px-4 py-2 rounded-xl border border-slate-800">
+      <i data-i="car" class="w-4 h-4 text-brand-blue-bright"></i><span>Hecho para llenarse en menos de 1 minuto desde tu vehículo (detente antes de escribir).</span>
+    </div>
+    <div class="pt-3 flex justify-center">
+      <a id="ctaMain" href="#reporte" class="btn-neon animate-pulse-glow font-black text-lg px-8 py-4 rounded-2xl flex items-center gap-3 group">
+        <span aria-hidden="true">🚨</span> Registrar un reporte aquí <i data-i="chevron-down" class="w-5 h-5 group-hover:translate-y-1 transition-transform"></i>
+      </a>
+    </div>
+    <div class="flex flex-wrap justify-center gap-x-8 gap-y-3 pt-4 text-sm">
+      <div><b id="heroTotal" class="text-2xl font-black text-white tabular-nums">0</b><span class="block text-xs text-slate-400">denuncias registradas</span></div>
+      <div><b id="heroToday" class="text-2xl font-black text-brand-glow tabular-nums">0</b><span class="block text-xs text-slate-400">en las últimas 24 h</span></div>
+      <div><b id="heroMoney" class="text-2xl font-black text-brand-purple-bright tabular-nums">S/ 0</b><span class="block text-xs text-slate-400">exigidos en total</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="reporte" class="px-4 sm:px-6 lg:px-8 py-14 lg:py-20 max-w-3xl mx-auto scroll-mt-24">
+  <div class="glass-panel rounded-3xl p-5 sm:p-9 relative overflow-hidden">
+    <div class="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-brand-blue via-brand-purple to-brand-glow"></div>
+
+    <div class="flex items-start justify-between gap-3 mb-5 pb-4 border-b border-slate-800">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white flex items-center gap-2.5"><i data-i="shield-check" class="w-7 h-7 text-brand-glow shrink-0"></i>Formulario de reporte</h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">Llena lo que hayas podido ver. Lo esencial: dónde, con qué te intervinieron y qué te pidieron.</p>
+      </div>
+      <span id="anonBadge" class="shrink-0 px-3 py-1.5 rounded-full bg-brand-neon/10 border border-brand-neon/40 text-brand-neon-bright text-xs font-bold inline-flex items-center gap-1.5"><i data-i="shield-check" class="w-3.5 h-3.5"></i><span>Anónimo</span></span>
+    </div>
+    <div class="meter h-1 rounded bg-slate-800 overflow-hidden mb-6" aria-hidden="true"><i id="meter"></i></div>
+
+    <form id="rf" novalidate autocomplete="off" class="space-y-5">
+      <!-- 1. Ubicación -->
+      <div class="sect space-y-3">
+        <p class="text-sm font-bold text-slate-100 flex items-center justify-between"><span class="flex items-center gap-2"><i data-i="map-pin" class="w-4 h-4 text-brand-blue-bright"></i>1. Ubicación del hecho</span><span class="text-xs text-brand-glow font-semibold">obligatorio</span></p>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div id="f-district" class="sm:col-span-2"><div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div><label class="lbl" for="dep">Departamento</label><select id="dep" class="inp"></select></div>
+            <div><label class="lbl" for="prov">Provincia</label><select id="prov" class="inp" disabled></select></div>
+            <div><label class="lbl" for="district">Distrito</label><select id="district" class="inp" disabled></select></div></div>
+            <p class="err">Elige departamento, provincia y distrito donde ocurrió.</p></div>
+          <div id="f-place" class="sm:col-span-2"><label class="lbl" for="place">Avenida principal, intersección o referencia</label>
+            <input id="place" class="inp" type="text" maxlength="160" placeholder="Ej.: Av. Javier Prado con Aviación, frente al grifo">
+            <p class="err">Indica la avenida o un punto de referencia (mín. 4 letras).</p></div>
+        </div>
+        <button id="gps" type="button" class="inline-flex items-center gap-2 text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-brand-blue-bright border border-brand-blue/40 px-3.5 py-2.5 rounded-xl transition active:scale-95 hover:shadow-[0_0_16px_rgba(37,99,235,.4)] disabled:opacity-60">
+          <i data-i="crosshair" class="w-4 h-4"></i><span id="gpsTxt">Usar mi ubicación GPS actual</span></button>
+      </div>
+
+      <!-- 2. Fecha y hora -->
+      <div class="sect space-y-3">
+
+                <p class="text-sm font-bold text-slate-100 flex items-center justify-between"><span class="flex items-center gap-2"><i data-i="clock" class="w-4 h-4 text-brand-purple-bright"></i>2. Fecha y hora</span><span class="text-xs text-slate-400">ya puesta con la hora actual</span></p>
+        <div class="grid grid-cols-2 gap-3">
+          <div id="f-date"><label class="lbl" for="rdate">Fecha</label><input id="rdate" type="date" class="inp"></div>
+          <div id="f-time"><label class="lbl" for="rtime">Hora aproximada</label><input id="rtime" type="time" class="inp"></div>
+        </div>
+        <p id="whenErr" class="err" style="display:none">La fecha y hora no pueden ser futuras.</p>
+      </div>
+
+      <div class="sect space-y-4">
+        <p class="text-sm font-bold text-slate-100 flex items-center justify-between"><span class="flex items-center gap-2"><i data-i="siren" class="w-4 h-4 text-brand-glow"></i>3. Datos de la intervención</span><span class="text-xs text-brand-glow font-semibold">obligatorio</span></p>
+        <div id="f-veh">
+          <span class="lbl">Tipo de vehículo policial</span>
+          <div class="grid grid-cols-3 gap-2 sm:gap-3">
+            <label class="veh relative"><input type="radio" name="veh" value="Patrulla"><span class="box"><i data-i="car" class="w-6 h-6"></i>Patrulla 🚔</span></label>
+            <label class="veh relative"><input type="radio" name="veh" value="Moto"><span class="box"><i data-i="bike" class="w-6 h-6"></i>Moto 🏍️</span></label>
+            <label class="veh relative"><input type="radio" name="veh" value="A pie"><span class="box"><i data-i="user" class="w-6 h-6"></i>Efectivo a pie 👮</span></label>
+          </div>
+          <p class="err">Elige con qué te intervinieron.</p>
+        </div>
+        <div><label class="lbl" for="plate">Placa del vehículo o apellido / número de identificación del efectivo <span class="text-slate-500">(opcional, si lograste verlo)</span></label>
+          <input id="plate" class="inp" type="text" maxlength="60" placeholder="Ej.: EGA-123 · apellido en el chaleco"></div>
+      </div>
+
+      <!-- 4. Monto -->
+      <div class="sect space-y-3">
+        <p class="text-sm font-bold text-slate-100 flex items-center justify-between"><span class="flex items-center gap-2"><i data-i="banknote" class="w-4 h-4 text-brand-glow"></i>4. Monto o tipo de exigencia</span><span class="text-xs text-brand-glow font-semibold">obligatorio</span></p>
+        <div class="flex flex-wrap gap-2" id="presets">
+          <button type="button" class="pill" data-v="S/ 20">S/ 20</button><button type="button" class="pill" data-v="S/ 50">S/ 50</button>
+          <button type="button" class="pill" data-v="S/ 100">S/ 100</button><button type="button" class="pill" data-v="S/ 200">S/ 200</button>
+          <button type="button" class="pill" data-v="Transferencia por aplicativo">Transferencia por app</button><button type="button" class="pill" data-v="Bienes o especie">Bienes / especie</button>
+        </div>
+        <div id="f-amt"><label class="lbl" for="amt">Monto solicitado en dinero (S/ o $) o tipo de beneficio exigido</label>
+          <input id="amt" class="inp" type="text" maxlength="120" placeholder="Ej.: S/ 50 · $20 · pidió que le invite un almuerzo">
+          <p class="err">Cuéntanos qué te pidieron: un monto o el tipo de beneficio.</p></div>
+      </div>
+
+      <div class="sect space-y-3">
+        <p class="text-sm font-bold text-slate-100 flex items-center justify-between"><span class="flex items-center gap-2"><i data-i="paperclip" class="w-4 h-4 text-brand-blue-bright"></i>5. Evidencia</span><span class="text-xs text-slate-400">opcional · foto, video o audio</span></p>
+        <label id="drop" class="drop" for="fileIn">
+          <span class="mx-auto mb-2 w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-brand-purple-bright"><i data-i="upload" class="w-5 h-5"></i></span>
+          <span class="block text-sm text-slate-200 font-semibold">Arrastra aquí tus archivos o toca para elegirlos</span>
+          <span class="block text-[11px] text-slate-500 mt-1">Fotos, videos cortos o audios · máx. 5 archivos de 25 MB</span>
+        </label>
+        <input id="fileIn" type="file" accept="image/*,video/*,audio/*" multiple hidden>
+        <ul id="files" class="grid gap-2"></ul>
+        <p id="fileErr" class="text-xs text-rose-400" hidden></p>
+      </div>
+
+      <label for="anon" class="flex items-center justify-between gap-4 p-4 rounded-2xl cursor-pointer bg-gradient-to-r from-brand-purple/20 via-slate-900/60 to-brand-blue/20 border border-brand-neon/40 shadow-[0_0_22px_rgba(0,255,135,.12)]">
+        <span class="block">
+          <span class="text-sm font-bold text-white flex items-center gap-2"><i data-i="lock" class="w-4 h-4 text-brand-glow shrink-0"></i>Guardar reporte de manera 100% anónima</span>
+          <span class="block text-xs text-slate-400 mt-0.5">Tus datos técnicos no serán almacenados.</span>
+        </span>
+        <span class="relative"><input id="anon" type="checkbox" checked class="absolute opacity-0 inset-0"><span class="sw"></span></span>
+      </label>
+
+      <button id="submitBtn" type="submit" class="btn-neon w-full py-4 px-6 rounded-2xl font-black text-lg flex items-center justify-center gap-2.5 shadow-xl shadow-brand-neon/20">
+        <span id="sIco"><i data-i="send" class="w-5 h-5"></i></span><span id="sSpin" class="spin" hidden></span><span id="sTxt">Enviar reporte seguro</span>
+      </button>
+      <p class="text-center text-xs text-slate-500">Solo se guarda distrito, referencia, fecha, tipo de intervención y exigencia. Nunca tu nombre.</p>
+    </form>
+  </div>
+</section>
+
+<section id="stats" class="px-4 sm:px-6 lg:px-8 py-14 lg:py-20 border-y border-slate-800/70 bg-slate-950/50 scroll-mt-20">
+  <div class="max-w-7xl mx-auto space-y-8">
+    <div class="text-center max-w-3xl mx-auto space-y-2">
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white flex items-center justify-center gap-3"><i data-i="activity" class="w-8 h-8 text-brand-glow shrink-0"></i>Cifras y zonas calientes</h2>
+      <p class="text-slate-400 text-sm sm:text-base">Se actualizan al instante con cada reporte que se registra.</p>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+      <div class="glass-card p-5 rounded-2xl"><p class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Total denuncias</p><p id="cTotal" class="text-3xl sm:text-4xl font-black text-white tabular-nums mt-1">0</p><p class="text-[11px] text-brand-neon-bright mt-1 flex items-center gap-1"><i data-i="trending-up" class="w-3 h-3"></i><span id="cTodayTxt">0 en las últimas 24 h</span></p></div>
+      <div class="glass-card p-5 rounded-2xl"><p class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Monto estimado</p><p id="cMoney" class="text-2xl sm:text-4xl font-black text-brand-glow tabular-nums mt-1 break-words">S/ 0</p><p class="text-[11px] text-slate-400 mt-1">Suma de lo exigido en dinero</p></div>
+      <div class="glass-card p-5 rounded-2xl"><p class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Con evidencia</p><p id="cEv" class="text-3xl sm:text-4xl font-black text-brand-blue-bright tabular-nums mt-1">0%</p><p class="text-[11px] text-slate-400 mt-1">Reportes con foto, video o audio</p></div>
+      <div class="glass-card p-5 rounded-2xl"><p class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Mayor incidencia este mes</p><p id="cTop" class="text-xl sm:text-2xl font-black text-rose-300 mt-1 truncate">—</p><p id="cTopN" class="text-[11px] text-rose-300 mt-1">—</p></div>
+    </div>
+
+    <div class="glass-panel rounded-3xl p-4 sm:p-7 space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-i="map-pin" class="w-5 h-5 text-brand-glow"></i>Mapa nocturno del Perú</h3>
+          <p class="text-xs text-slate-400">Toca un departamento para ver sus distritos con más reportes. Cubre los 25 departamentos del Perú.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-4">
+          <div class="seg inline-flex p-1 rounded-2xl bg-slate-950/70 border border-slate-700/60" id="seg" role="group" aria-label="Periodo">
+            <button type="button" data-r="day" aria-pressed="false">Hoy</button><button type="button" data-r="week" aria-pressed="true">Esta semana</button><button type="button" data-r="all" aria-pressed="false">Histórico</button>
+          </div>
+        </div>
+      </div>
+      <div class="grid lg:grid-cols-[minmax(0,460px)_1fr] gap-6">
+        <div class="mapbox relative rounded-2xl border border-blue-700/40 overflow-hidden bg-[#0A0F20] max-w-full" id="mapbox" style="aspect-ratio:5/6;max-height:680px;width:100%">
+          <canvas id="map" role="img" aria-label="Mapa nocturno con zonas calientes de reportes"></canvas><div id="tip" class="tip"></div>
+        </div>
+        <div>
+          <div class="flex items-center justify-between gap-2 mb-3"><p class="text-xs font-semibold text-slate-400 uppercase tracking-wider"><span id="rankTitle">Departamentos con más reportes</span></p><button id="rankBack" type="button" hidden class="text-xs text-brand-glow hover:underline inline-flex items-center gap-1"><i data-i="arrow-left" class="w-3.5 h-3.5"></i>Todo el Perú</button></div>
+          <ol id="rank" class="space-y-3"></ol>
+          <div class="flex flex-wrap gap-x-4 gap-y-1 mt-5 text-[11px] text-slate-400">
+            <span><i class="inline-block w-2.5 h-2.5 rounded-full bg-brand-glow mr-1.5"></i>Pocos</span><span><i class="inline-block w-2.5 h-2.5 rounded-full bg-brand-purple mr-1.5"></i>Varios</span><span><i class="inline-block w-2.5 h-2.5 rounded-full bg-rose-500 mr-1.5"></i>Muchos</span>
+          </div>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500">Mapa esquemático de todo el Perú (25 departamentos, con sus provincias y distritos en el formulario). Las cifras iniciales son datos de ejemplo para mostrar cómo se verá la plataforma; los reportes que envíes se suman encima.</p>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="px-4 sm:px-6 lg:px-8 py-14 lg:py-20 max-w-4xl mx-auto space-y-8 scroll-mt-20">
+  <div class="text-center space-y-2">
+    <h2 class="text-3xl font-extrabold text-white flex items-center justify-center gap-2"><i data-i="shield" class="w-7 h-7 text-brand-purple-bright shrink-0"></i>Preguntas frecuentes y seguridad</h2>
+    <p class="text-slate-400 text-sm">Qué pasa con tu información, sin letra chica.</p>
+  </div>
+  <div class="space-y-3">
+    <details class="faq glass-panel rounded-2xl" open>
+      <summary class="p-5 flex items-center justify-between gap-4 font-bold text-white"><span class="flex items-center gap-2.5"><i data-i="lock" class="w-4 h-4 text-brand-glow shrink-0"></i>¿Es seguro mi reporte?</span><span class="pm text-2xl leading-none text-brand-purple-bright">+</span></summary>
+      <div class="px-5 pb-5 text-sm text-slate-300 leading-relaxed space-y-3">
+        <p>La plataforma está diseñada para que no haya a quién identificar: <strong class="text-white">no pide nombre, correo ni teléfono</strong>, la comunicación va cifrada y, con el interruptor de anonimato activo, no se guarda tu IP ni datos de tu dispositivo. Solo queda lo que ocurrió y dónde.</p>
+        <p>Si usas el GPS, se convierte en el distrito más cercano; la coordenada exacta no se guarda.</p>
+        <p class="p-3 rounded-xl text-[13px] bg-rose-500/10 border border-rose-500/30 text-rose-200">Esta versión es una demostración sin servidor: los reportes se guardan solo en este navegador. Antes de recibir denuncias reales hay que conectar un backend con estas garantías.</p>
+      </div>
+    </details>
+    <details class="faq glass-panel rounded-2xl">
+      <summary class="p-5 flex items-center justify-between gap-4 font-bold text-white"><span class="flex items-center gap-2.5"><i data-i="file-text" class="w-4 h-4 text-brand-blue-bright shrink-0"></i>¿Qué pasa con mi denuncia?</span><span class="pm text-2xl leading-none text-brand-purple-bright">+</span></summary>
+      <div class="px-5 pb-5 text-sm text-slate-300 leading-relaxed space-y-3">
+        <p>Cada reporte se suma a una base de datos consolidada, sin datos personales. Con ella, <strong class="text-white">Vanguardia Ciudadana</strong> genera informes periódicos por distrito, avenida, tipo de intervención y monto exigido.</p>
+        <p>Esos informes se envían a Inspectoría, a medios de comunicación y a entidades fiscalizadoras, para que vean patrones y no casos aislados.</p>
+      </div>
+    </details>
+    <details class="faq glass-panel rounded-2xl">
+      <summary class="p-5 flex items-center justify-between gap-4 font-bold text-white"><span class="flex items-center gap-2.5"><i data-i="clock" class="w-4 h-4 text-brand-purple-bright shrink-0"></i>¿Puedo editar o borrar mi reporte después?</span><span class="pm text-2xl leading-none text-brand-purple-bright">+</span></summary>
+      <div class="px-5 pb-5 text-sm text-slate-300 leading-relaxed space-y-3">
+        <p>Como es anónimo, no existe una cuenta que te vincule con el reporte, así que <strong class="text-white">una vez enviado no se puede editar ni borrar</strong>. Eso protege la integridad de los datos: nadie puede alterar ni retirar denuncias ajenas.</p>
+        <p>Si te equivocaste en algo importante, envía un nuevo reporte con el dato correcto. En esta demostración puedes borrar lo guardado en tu navegador desde el pie de página.</p>
+      </div>
+    </details>
+  </div>
+</section>
+</main>
+
+<footer class="border-t border-slate-800/80 bg-slate-950 py-8 px-4 text-center text-xs text-slate-500 space-y-2">
+  <p>Breaking the Silence · Plataforma ciudadana independiente</p>
+  <p>Desarrollado por <span class="text-slate-300 font-semibold">Vanguardia Ciudadana</span>. Si estás en peligro inmediato, llama al 105 (Policía Nacional).</p>
+  <button id="wipe" type="button" class="underline text-slate-400 hover:text-rose-400">Borrar reportes guardados en este dispositivo</button>
+</footer>
+
+<!-- Modal de confirmación -->
+<div id="modal" class="fixed inset-0 z-[90] bg-black/80 backdrop-blur-md flex items-center justify-center p-4" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="glass-panel max-w-md w-full rounded-3xl p-7 space-y-5 text-center border-brand-neon/40">
+    <svg class="check w-24 h-24 mx-auto drop-shadow-[0_0_14px_rgba(0,255,135,.6)]" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="42"/><path d="M32 52l14 14 24-28"/></svg>
+    <div class="space-y-1"><h3 id="mTitle" class="text-2xl font-black text-white">¡Reporte registrado!</h3><p class="text-sm text-slate-300">Ya suma al mapa y a las cifras públicas. Gracias por romper el silencio.</p></div>
+    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+      <span class="text-[11px] uppercase text-slate-400 tracking-wider font-semibold">Código de seguimiento anónimo</span>
+      <p id="mCode" class="font-mono text-xl font-black text-brand-glow tracking-widest mt-1">#BTS-0000-X</p>
+      <button id="copyCode" type="button" class="mt-2 text-xs text-slate-400 hover:text-white inline-flex items-center gap-1.5"><i data-i="copy" class="w-3.5 h-3.5"></i>Copiar código</button>
+    </div>
+    <button id="mClose" type="button" class="btn-neon w-full py-3.5 rounded-xl font-bold">Entendido</button>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"><span id="toastIc" class="ic">✓</span><span id="toastMsg"></span></div>
+
+<script>
+var PE=[["01","Amazonas",[["01","Chachapoyas",["Chachapoyas","Asunción","Balsas","Cheto","Chiliquin","Chuquibamba","Granada","Huancas","La Jalca","Leimebamba","Levanto","Magdalena","Mariscal Castilla","Molinopampa","Montevideo","Olleros","Quinjalca","San Francisco de Daguas","San Isidro de Maino","Soloco","Sonche"]],["02","Bagua",["Bagua","Aramango","Copallin","El Parco","Imaza","La Peca"]],["03","Bongará",["Jumbilla","Chisquilla","Churuja","Corosha","Cuispes","Florida","Jazan","Recta","San Carlos","Shipasbamba","Valera","Yambrasbamba"]],["04","Condorcanqui",["Nieva","El Cenepa","Rio Santiago"]],["05","Luya",["Lamud","Camporredondo","Cocabamba","Colcamar","Conila","Inguilpata","Longuita","Lonya Chico","Luya","Luya Viejo","Maria","Ocalli","Ocumal","Pisuquia","Providencia","San Cristóbal","San Francisco del Yeso","San Jerónimo","San Juan de Lopecancha","Santa Catalina","Santo Tomas","Tingo","Trita"]],["06","Rodríguez de Mendoza",["San Nicolas","Chirimoto","Cochamal","Huambo","Limabamba","Longar","Mariscal Benavides","Milpuc","Omia","Santa Rosa","Totora","Vista Alegre"]],["07","Utcubamba",["Bagua Grande","Cajaruro","Cumba","El Milagro","Jamalca","Lonya Grande","Yamon"]]]],
+["02","Áncash",[["01","Huaraz",["Huaraz","Cochabamba","Colcabamba","Huanchay","Independencia","Jangas","La Libertad","Olleros","Pampas","Pariacoto","Pira","Tarica"]],["02","Aija",["Aija","Coris","Huacllan","La Merced","Succha"]],["03","Antonio Raymondi",["Llamellin","Aczo","Chaccho","Chingas","Mirgas","San Juan de Rontoy"]],["04","Asunción",["Chacas","Acochaca"]],["05","Bolognesi",["Chiquian","Abelardo Pardo Lezameta","Antonio Raymondi","Aquia","Cajacay","Canis","Colquioc","Huallanca","Huasta","Huayllacayan","La Primavera","Mangas","Pacllon","San Miguel de Corpanqui","Ticllos"]],["06","Carhuaz",["Carhuaz","Acopampa","Amashca","Anta","Ataquero","Marcara","Pariahuanca","San Miguel de Aco","Shilla","Tinco","Yungar"]],["07","Carlos Fermín Fitzcarral",["San Luis","San Nicolas","Yauya"]],["08","Casma",["Casma","Buena Vista Alta","Comandante Noel","Yautan"]],["09","Corongo",["Corongo","Aco","Bambas","Cusca","La Pampa","Yanac","Yupan"]],["10","Huari",["Huari","Anra","Cajay","Chavin de Huantar","Huacachi","Huacchis","Huachis","Huantar","Masin","Paucas","Ponto","Rahuapampa","Rapayan","San Marcos","San Pedro de Chana","Uco"]],["11","Huarmey",["Huarmey","Cochapeti","Culebras","Huayan","Malvas"]],["12","Huaylas",["Caraz","Huallanca","Huata","Huaylas","Mato","Pamparomas","Pueblo Libre","Santa Cruz","Santo Toribio","Yuracmarca"]],["13","Mariscal Luzuriaga",["Piscobamba","Casca","Eleazar Guzmán Barron","Fidel Olivas Escudero","Llama","Llumpa","Lucma","Musga"]],["14","Ocros",["Ocros","Acas","Cajamarquilla","Carhuapampa","Cochas","Congas","Llipa","San Cristóbal de Rajan","San Pedro","Santiago de Chilcas"]],["15","Pallasca",["Cabana","Bolognesi","Conchucos","Huacaschuque","Huandoval","Lacabamba","Llapo","Pallasca","Pampas","Santa Rosa","Tauca"]],["16","Pomabamba",["Pomabamba","Huayllan","Parobamba","Quinuabamba"]],["17","Recuay",["Recuay","Catac","Cotaparaco","Huayllapampa","Llacllin","Marca","Pampas Chico","Pararin","Tapacocha","Ticapampa"]],["18","Santa",["Chimbote","Cáceres del Perú","Coishco","Macate","Moro","Nepeña","Samanco","Santa","Nuevo Chimbote"]],["19","Sihuas",["Sihuas","Acobamba","Alfonso Ugarte","Cashapampa","Chingalpo","Huayllabamba","Quiches","Ragash","San Juan","Sicsibamba"]],["20","Yungay",["Yungay","Cascapara","Mancos","Matacoto","Quillo","Ranrahirca","Shupluy","Yanama"]]]],
+["03","Apurímac",[["01","Abancay",["Abancay","Chacoche","Circa","Curahuasi","Huanipaca","Lambrama","Pichirhua","San Pedro de Cachora","Tamburco"]],["02","Andahuaylas",["Andahuaylas","Andarapa","Chiara","Huancarama","Huancaray","Huayana","Kishuara","Pacobamba","Pacucha","Pampachiri","Pomacocha","San Antonio de Cachi","San Jerónimo","San Miguel de Chaccrampa","Santa Maria de Chicmo","Talavera","Tumay Huaraca","Turpo","Kaquiabamba","José María Arguedas"]],["03","Antabamba",["Antabamba","El Oro","Huaquirca","Juan Espinoza Medrano","Oropesa","Pachaconas","Sabaino"]],["04","Aymaraes",["Chalhuanca","Capaya","Caraybamba","Chapimarca","Colcabamba","Cotaruse","Huayllo","Justo Apu Sahuaraura","Lucre","Pocohuanca","San Juan de Chacña","Sañayca","Soraya","Tapairihua","Tintay","Toraya","Yanaca"]],["05","Cotabambas",["Tambobamba","Cotabambas","Coyllurqui","Haquira","Mara","Challhuahuacho"]],["06","Chincheros",["Chincheros","Anco Huallo","Cocharcas","Huaccana","Ocobamba","Ongoy","Uranmarca","Ranracancha","Rocchacc","El Porvenir","Los Chankas"]],["07","Grau",["Chuquibambilla","Curpahuasi","Gamarra","Huayllati","Mamara","Micaela Bastidas","Pataypampa","Progreso","San Antonio","Santa Rosa","Turpay","Vilcabamba","Virundo","Curasco"]]]],
+["04","Arequipa",[["01","Arequipa",["Arequipa","Alto Selva Alegre","Cayma","Cerro Colorado","Characato","Chiguata","Jacobo Hunter","La Joya","Mariano Melgar","Miraflores","Mollebaya","Paucarpata","Pocsi","Polobaya","Quequeña","Sabandia","Sachaca","San Juan de Siguas","San Juan de Tarucani","Santa Isabel de Siguas","Santa Rita de Siguas","Socabaya","Tiabaya","Uchumayo","Vitor","Yanahuara","Yarabamba","Yura","Jose Luis Bustamante y Rivero"]],["02","Camaná",["Camaná","Jose Maria Quimper","Mariano Nicolas Valcárcel","Mariscal Cáceres","Nicolas de Pierola","Ocoña","Quilca","Samuel Pastor"]],["03","Caravelí",["Caravelí","Acarí","Atico","Atiquipa","Bella Union","Cahuacho","Chala","Chaparra","Huanuhuanu","Jaqui","Lomas","Quicacha","Yauca"]],["04","Castilla",["Aplao","Andagua","Ayo","Chachas","Chilcaymarca","Choco","Huancarqui","Machaguay","Orcopampa","Pampacolca","Tipan","Uñon","Uraca","Viraco"]],["05","Caylloma",["Chivay","Achoma","Cabanaconde","Callalli","Caylloma","Coporaque","Huambo","Huanca","Ichupampa","Lari","Lluta","Maca","Madrigal","San Antonio de Chuca","Sibayo","Tapay","Tisco","Tuti","Yanque","Majes"]],["06","Condesuyos",["Chuquibamba","Andaray","Cayarani","Chichas","Iray","Rio Grande","Salamanca","Yanaquihua"]],["07","Islay",["Mollendo","Cocachacra","Dean Valdivia","Islay","Mejia","Punta de Bombón"]],["08","La Union",["Cotahuasi","Alca","Charcana","Huaynacotas","Pampamarca","Puyca","Quechualla","Sayla","Tauria","Tomepampa","Toro"]]]],
+["05","Ayacucho",[["01","Huamanga",["Ayacucho","Acocro","Acos Vinchos","Carmen Alto","Chiara","Ocros","Pacaycasa","Quinua","San Jose de Ticllas","San Juan Bautista","Santiago de Pischa","Socos","Tambillo","Vinchos","Jesus Nazareno","Andrés Avelino Cáceres Dorregaray"]],["02","Cangallo",["Cangallo","Chuschi","Los Morochucos","Maria Parado de Bellido","Paras","Totos"]],["03","Huanca Sancos",["Sancos","Carapo","Sacsamarca","Santiago de Lucanamarca"]],["04","Huanta",["Huanta","Ayahuanco","Huamanguilla","Iguain","Luricocha","Santillana","Sivia","Llochegua","Canayre","Uchuraccay","Pucacolpa","Chaca"]],["05","La Mar",["San Miguel","Anco","Ayna","Chilcas","Chungui","Luis Carranza","Santa Rosa","Tambo","Samugari","Anchihuay","Oronccoy"]],["06","Lucanas",["Puquio","Aucara","Cabana","Carmen Salcedo","Chaviña","Chipao","Huac-Huas","Laramate","Leoncio Prado","Llauta","Lucanas","Ocaña","Otoca","Saisa","San Cristóbal","San Juan","San Pedro","San Pedro de Palco","Sancos","Santa Ana de Huaycahuacho","Santa Lucia"]],["07","Parinacochas",["Coracora","Chumpi","Coronel Castañeda","Pacapausa","Pullo","Puyusca","San Francisco de Ravacayco","Upahuacho"]],["08","Paucar del Sara Sara",["Pausa","Colta","Corculla","Lampa","Marcabamba","Oyolo","Pararca","San Javier de Alpabamba","San Jose de Ushua","Sara Sara"]],["09","Sucre",["Querobamba","Belén","Chalcos","Chilcayoc","Huacaña","Morcolla","Paico","San Pedro de Larcay","San Salvador de Quije","Santiago de Paucaray","Soras"]],["10","Victor Fajardo",["Huancapi","Alcamenca","Apongo","Asquipata","Canaria","Cayara","Colca","Huamanquiquia","Huancaraylla","Huaya","Sarhua","Vilcanchos"]],["11","Vilcas Huaman",["Vilcas Huaman","Accomarca","Carhuanca","Concepcion","Huambalpa","Independencia","Saurama","Vischongo"]]]],
+["06","Cajamarca",[["01","Cajamarca",["Cajamarca","Asunción","Chetilla","Cospan","Encañada","Jesus","Llacanora","Los Baños del Inca","Magdalena","Matara","Namora","San Juan"]],["02","Cajabamba",["Cajabamba","Cachachi","Condebamba","Sitacocha"]],["03","Celendín",["Celendín","Chumuch","Cortegana","Huasmin","Jorge Chávez","Jose Gálvez","Miguel Iglesias","Oxamarca","Sorochuco","Sucre","Utco","La Libertad de Pallan"]],["04","Chota",["Chota","Anguia","Chadin","Chiguirip","Chimban","Choropampa","Cochabamba","Conchan","Huambos","Lajas","Llama","Miracosta","Paccha","Pion","Querocoto","San Juan de Licupis","Tacabamba","Tocmoche","Chalamarca"]],["05","Contumaza",["Contumaza","Chilete","Cupisnique","Guzmango","San Benito","Santa Cruz de Toled","Tantarica","Yonan"]],["06","Cutervo",["Cutervo","Callayuc","Choros","Cujillo","La Ramada","Pimpingos","Querocotillo","San Andrés de Cutervo","San Juan de Cutervo","San Luis de Lucma","Santa Cruz","Santo Domingo de La Capilla","Santo Tomas","Socota","Toribio Casanova"]],["07","Hualgayoc",["Bambamarca","Chugur","Hualgayoc"]],["08","Jaén",["Jaén","Bellavista","Chontali","Colasay","Huabal","Las Pirias","Pomahuaca","Pucara","Sallique","San Felipe","San Jose del Alto","Santa Rosa"]],["09","San Ignacio",["San Ignacio","Chirinos","Huarango","La Coipa","Namballe","San Jose de Lourdes","Tabaconas"]],["10","San Marcos",["Pedro Gálvez","Chancay","Eduardo Villanueva","Gregorio Pita","Ichocan","Jose Manuel Quiroz","Jose Sabogal"]],["11","San Miguel",["San Miguel","Bolivar","Calquis","Catilluc","El Prado","La Florida","Llapa","Nanchoc","Niepos","San Gregorio","San Silvestre de Cochan","Tongod","Union Agua Blanca"]],["12","San Pablo",["San Pablo","San Bernardino","San Luis","Tumbaden"]],["13","Santa Cruz",["Santa Cruz","Andabamba","Catache","Chancaybaños","La Esperanza","Ninabamba","Pulan","Saucepampa","Sexi","Uticyacu","Yauyucan"]]]],
+["07","Callao",[["01","Callao",["Callao","Bellavista","Carmen de La Legua","La Perla","La Punta","Ventanilla","Mi Perú"]]]],
+["08","Cusco",[["01","Cusco",["Cusco","Ccorca","Poroy","San Jerónimo","San Sebastian","Santiago","Saylla","Wanchaq"]],["02","Acomayo",["Acomayo","Acopia","Acos","Mosoc Llacta","Pomacanchi","Rondocan","Sangarara"]],["03","Anta",["Anta","Ancahuasi","Cachimayo","Chinchaypujio","Huarocondo","Limatambo","Mollepata","Pucyura","Zurite"]],["04","Calca",["Calca","Coya","Lamay","Lares","Pisac","San Salvador","Taray","Yanatile"]],["05","Canas",["Yanaoca","Checca","Kunturkanki","Langui","Layo","Pampamarca","Quehue","Tupac Amaru"]],["06","Canchis",["Sicuani","Checacupe","Combapata","Marangani","Pitumarca","San Pablo","San Pedro","Tinta"]],["07","Chumbivilcas",["Santo Tomas","Capacmarca","Chamaca","Colquemarca","Livitaca","Llusco","Quiñota","Velille"]],["08","Espinar",["Espinar","Condoroma","Coporaque","Ocoruro","Pallpata","Pichigua","Suyckutambo","Alto Pichigua"]],["09","La Convención",["Santa Ana","Echarate","Huayopata","Maranura","Ocobamba","Quellouno","Kimbiri","Santa Teresa","Vilcabamba","Pichari","Inkawasi","Villa Virgen","Villa Kintiarina","Megantoni"]],["10","Paruro",["Paruro","Accha","Ccapi","Colcha","Huanoquite","Omacha","Paccaritambo","Pillpinto","Yaurisque"]],["11","Paucartambo",["Paucartambo","Caicay","Challabamba","Colquepata","Huancarani","Kosñipata"]],["12","Quispicanchi",["Urcos","Andahuaylillas","Camanti","Ccarhuayo","Ccatca","Cusipata","Huaro","Lucre","Marcapata","Ocongate","Oropesa","Quiquijana"]],["13","Urubamba",["Urubamba","Chinchero","Huayllabamba","Machupicchu","Maras","Ollantaytambo","Yucay"]]]],
+["09","Huancavelica",[["01","Huancavelica",["Huancavelica","Acobambilla","Acoria","Conayca","Cuenca","Huachocolpa","Huayllahuara","Izcuchaca","Laria","Manta","Mariscal Cáceres","Moya","Nuevo Occoro","Palca","Pilchaca","Vilca","Yauli","Ascensión","Huando"]],["02","Acobamba",["Acobamba","Andabamba","Anta","Caja","Marcas","Paucara","Pomacocha","Rosario"]],["03","Angaraes",["Lircay","Anchonga","Callanmarca","Ccochaccasa","Chincho","Congalla","Huanca-Huanca","Huayllay Grande","Julcamarca","San Antonio de Antaparco","Santo Tomas de Pata","Secclla"]],["04","Castrovirreyna",["Castrovirreyna","Arma","Aurahua","Capillas","Chupamarca","Cocas","Huachos","Huamatambo","Mollepampa","San Juan","Santa Ana","Tantara","Ticrapo"]],["05","Churcampa",["Churcampa","Anco","Chinchihuasi","El Carmen","La Merced","Locroja","Paucarbamba","San Miguel de Mayocc","San Pedro de Coris","Pachamarca","Cosme"]],["06","Huaytara",["Huaytara","Ayavi","Córdova","Huayacundo Arma","Laramarca","Ocoyo","Pilpichaca","Querco","Quito-Arma","San Antonio de Cusicancha","San Francisco de Sangayaico","San Isidro","Santiago de Chocorvos","Santiago de Quirahuara","Santo Domingo de Capillas","Tambo"]],["07","Tayacaja",["Pampas","Acostambo","Acraquia","Ahuaycha","Colcabamba","Daniel Hernández","Huachocolpa","Huaribamba","Ñahuimpuquio","Pazos","Quishuar","Salcabamba","Salcahuasi","San Marcos de Rocchac","Surcubamba","Tintay Puncu","Quichuas","Andaymarca","Roble","Pichos","Santiago de Tucuma"]]]],
+["10","Huanuco",[["01","Huanuco",["Huanuco","Amarilis","Chinchao","Churubamba","Margos","Quisqui","San Francisco de Cayran","San Pedro de Chaulan","Santa Maria del Valle","Yarumayo","Pillco Marca","Yacus","San Pablo de Pillao"]],["02","Ambo",["Ambo","Cayna","Colpas","Conchamarca","Huacar","San Francisco","San Rafael","Tomay Kichwa"]],["03","Dos de Mayo",["La Union","Chuquis","Marías","Pachas","Quivilla","Ripan","Shunqui","Sillapata","Yanas"]],["04","Huacaybamba",["Huacaybamba","Canchabamba","Cochabamba","Pinra"]],["05","Huamalíes",["Llata","Arancay","Chavin de Pariarca","Jacas Grande","Jircan","Miraflores","Monzón","Punchao","Puños","Singa","Tantamayo"]],["06","Leoncio Prado",["Rupa-Rupa","Daniel Alomias Robles","Hermílio Valdizan","Jose Crespo y Castillo","Luyando","Mariano Damaso Beraun","Pucayacu","Castillo Grande","Pueblo Nuevo","Santo Domingo de Anda"]],["07","Marañon",["Huacrachuco","Cholon","San Buenaventura","La Morada","Santa Rosa de Alto Yanajanca"]],["08","Pachitea",["Panao","Chaglla","Molino","Umari"]],["09","Puerto Inca",["Puerto Inca","Codo del Pozuzo","Honoria","Tournavista","Yuyapichis"]],["10","Lauricocha",["Jesus","Baños","Jivia","Queropalca","Rondos","San Francisco de Asís","San Miguel de Cauri"]],["11","Yarowilca",["Chavinillo","Cahuac","Chacabamba","Aparicio Pomares","Jacas Chico","Obas","Pampamarca","Choras"]]]],
+["11","Ica",[["01","Ica",["Ica","La Tinguiña","Los Aquijes","Ocucaje","Pachacutec","Parcona","Pueblo Nuevo","Salas","San Jose de los Molinos","San Juan Bautista","Santiago","Subtanjalla","Tate","Yauca del Rosario"]],["02","Chincha",["Chincha Alta","Alto Laran","Chavin","Chincha Baja","El Carmen","Grocio Prado","Pueblo Nuevo","San Juan de Yanac","San Pedro de Huacarpana","Sunampe","Tambo de Mora"]],["03","Nazca",["Nazca","Changuillo","El Ingenio","Marcona","Vista Alegre"]],["04","Palpa",["Palpa","Llipata","Rio Grande","Santa Cruz","Tibillo"]],["05","Pisco",["Pisco","Huancano","Humay","Independencia","Paracas","San Andrés","San Clemente","Tupac Amaru Inca"]]]],
+["12","Junín",[["01","Huancayo",["Huancayo","Carhuacallanga","Chacapampa","Chicche","Chilca","Chongos Alto","Chupuro","Colca","Cullhuas","El Tambo","Huacrapuquio","Hualhuas","Huancan","Huasicancha","Huayucachi","Ingenio","Pariahuanca","Pilcomayo","Pucara","Quichuay","Quilcas","San Agustín","San Jerónimo de Tunan","Saño","Sapallanga","Sicaya","Santo Domingo de Acobamba","Viques"]],["02","Concepcion",["Concepcion","Aco","Andamarca","Chambara","Cochas","Comas","Heroínas Toledo","Manzanares","Mariscal Castilla","Matahuasi","Mito","Nueve de Julio","Orcotuna","San Jose de Quero","Santa Rosa de Ocopa"]],["03","Chanchamayo",["Chanchamayo","Perene","Pichanaqui","San Luis de Shuaro","San Ramón","Vitoc"]],["04","Jauja",["Jauja","Acolla","Apata","Ataura","Canchayllo","Curicaca","El Mantaro","Huamali","Huaripampa","Huertas","Janjaillo","Julcan","Leonor Ordóñez","Llocllapampa","Marco","Masma","Masma Chicche","Molinos","Monobamba","Muqui","Muquiyauyo","Paca","Paccha","Pancan","Parco","Pomacancha","Ricran","San Lorenzo","San Pedro de Chunan","Sausa","Sincos","Tunan Marca","Yauli","Yauyos"]],["05","Junín",["Junín","Carhuamayo","Ondores","Ulcumayo"]],["06","Satipo",["Satipo","Coviriali","Llaylla","Mazamari","Pampa Hermosa","Pangoa","Rio Negro","Rio Tambo","Vizcatan del Ene"]],["07","Tarma",["Tarma","Acobamba","Huaricolca","Huasahuasi","La Union","Palca","Palcamayo","San Pedro de Cajas","Tapo"]],["08","Yauli",["La Oroya","Chacapalpa","Huay-Huay","Marcapomacocha","Morococha","Paccha","Santa Barbara de Carhuacayan","Santa Rosa de Sacco","Suitucancha","Yauli"]],["09","Chupaca",["Chupaca","Ahuac","Chongos Bajo","Huachac","Huamancaca Chico","San Juan de Yscos","San Juan de Jarpa","Tres de Diciembre","Yanacancha"]]]],
+["13","La Libertad",[["01","Trujillo",["Trujillo","El Porvenir","Florencia de Mora","Huanchaco","La Esperanza","Laredo","Moche","Poroto","Salaverry","Simbal","Victor Larco Herrera"]],["02","Ascope",["Ascope","Chicama","Chocope","Magdalena de Cao","Paijan","Rázuri","Santiago de Cao","Casa Grande"]],["03","Bolivar",["Bolivar","Bambamarca","Condormarca","Longotea","Uchumarca","Ucuncha"]],["04","Chepén",["Chepén","Pacanga","Pueblo Nuevo"]],["05","Julcan",["Julcan","Calamarca","Carabamba","Huaso"]],["06","Otuzco",["Otuzco","Agallpampa","Charat","Huaranchal","La Cuesta","Mache","Paranday","Salpo","Sinsicap","Usquil"]],["07","Pacasmayo",["San Pedro de Lloc","Guadalupe","Jequetepeque","Pacasmayo","San Jose"]],["08","Pataz",["Tayabamba","Buldibuyo","Chillia","Huancaspata","Huaylillas","Huayo","Ongon","Parcoy","Pataz","Pias","Santiago de Challas","Taurija","Urpay"]],["09","Sánchez Carrión",["Huamachuco","Chugay","Cochorco","Curgos","Marcabal","Sanagoran","Sarin","Sartimbamba"]],["10","Santiago de Chuco",["Santiago de Chuco","Angasmarca","Cachicadan","Mollebamba","Mollepata","Quiruvilca","Santa Cruz de Chuca","Sitabamba"]],["11","Gran Chimú",["Cascas","Lucma","Compin","Sayapullo"]],["12","Virú",["Virú","Chao","Guadalupito"]]]],
+["14","Lambayeque",[["01","Chiclayo",["Chiclayo","Chongoyape","Eten","Eten Puerto","Jose Leonardo Ortiz","La Victoria","Lagunas","Monsefu","Nueva Arica","Oyotun","Picsi","Pimentel","Reque","Santa Rosa","Saña","Cayalti","Patapo","Pomalca","Pucala","Tuman"]],["02","Ferreñafe",["Ferreñafe","Cañaris","Incahuasi","Manuel Antonio Mesones Muro","Pitipo","Pueblo Nuevo"]],["03","Lambayeque",["Lambayeque","Chochope","Illimo","Jayanca","Mochumi","Morrope","Motupe","Olmos","Pacora","Salas","San Jose","Tucume"]]]],
+["15","Lima",[["01","Lima",["Lima","Ancón","Ate","Barranco","Breña","Carabayllo","Chaclacayo","Chorrillos","Cieneguilla","Comas","El Agustino","Independencia","Jesus Maria","La Molina","La Victoria","Lince","Los Olivos","Lurigancho","Lurin","Magdalena del Mar","Pueblo Libre","Miraflores","Pachacamac","Pucusana","Puente Piedra","Punta Hermosa","Punta Negra","Rímac","San Bartolo","San Borja","San Isidro","San Juan de Lurigancho","San Juan de Miraflores","San Luis","San Martín de Porres","San Miguel","Santa Anita","Santa Maria del Mar","Santa Rosa","Santiago de Surco","Surquillo","Villa El Salvador","Villa Maria del Triunfo"]],["02","Barranca",["Barranca","Paramonga","Pativilca","Supe","Supe Puerto"]],["03","Cajatambo",["Cajatambo","Copa","Gorgor","Huancapon","Manas"]],["04","Canta",["Canta","Arahuay","Huamantanga","Huaros","Lachaqui","San Buenaventura","Santa Rosa de Quives"]],["05","Cañete",["San Vicente de Cañete","Asia","Calango","Cerro Azul","Chilca","Coayllo","Imperial","Lunahuana","Mala","Nuevo Imperial","Pacaran","Quilmana","San Antonio","San Luis","Santa Cruz de Flores","Zúñiga"]],["06","Huaral",["Huaral","Atavillos Alto","Atavillos Bajo","Aucallama","Chancay","Ihuari","Lampian","Pacaraos","San Miguel de Acos","Santa Cruz de Andamarca","Sumbilca","Veintisiete de Noviembre"]],["07","Huarochiri",["Matucana","Antioquia","Callahuanca","Carampoma","Chicla","Cuenca","Huachupampa","Huanza","Huarochiri","Lahuaytambo","Langa","Laraos","Mariatana","Ricardo Palma","San Andrés de Tupicocha","San Antonio","San Bartolomé","San Damian","San Juan de Iris","San Juan de Tantaranche","San Lorenzo de Quinti","San Mateo","San Mateo de Otao","San Pedro de Casta","San Pedro de Huancayre","Sangallaya","Santa Cruz de Cocachacra","Santa Eulalia","Santiago de Anchucaya","Santiago de Tuna","Santo Domingo de los Olleros","Surco"]],["08","Huaura",["Huacho","Ambar","Caleta de Carquin","Checras","Hualmay","Huaura","Leoncio Prado","Paccho","Santa Leonor","Santa Maria","Sayan","Vegueta"]],["09","Oyon",["Oyon","Andajes","Caujul","Cochamarca","Navan","Pachangara"]],["10","Yauyos",["Yauyos","Alis","Ayauca","Ayaviri","Azángaro","Cacra","Carania","Catahuasi","Chocos","Cochas","Colonia","Hongos","Huampara","Huancaya","Huangascar","Huantan","Huañec","Laraos","Lincha","Madean","Miraflores","Omas","Putinza","Quinches","Quinocay","San Joaquín","San Pedro de Pilas","Tanta","Tauripampa","Tomas","Tupe","Viñac","Vitis"]]]],
+["16","Loreto",[["01","Maynas",["Iquitos","Alto Nanay","Fernando Lores","Indiana","Las Amazonas","Mazan","Napo","Punchana","Torres Causana","Belén","San Juan Bautista"]],["02","Alto Amazonas",["Yurimaguas","Balsapuerto","Jeberos","Lagunas","Santa Cruz","Teniente Cesar López Rojas"]],["03","Loreto",["Nauta","Parinari","Tigre","Trompeteros","Urarinas"]],["04","Mariscal Ramón Castilla",["Ramón Castilla","Pebas","Yavari","San Pablo"]],["05","Requena",["Requena","Alto Tapiche","Capelo","Emilio San Martín","Maquia","Puinahua","Saquena","Soplin","Tapiche","Jenaro Herrera","Yaquerana"]],["06","Ucayali",["Contamana","Inahuaya","Padre Marquez","Pampa Hermosa","Sarayacu","Vargas Guerra"]],["07","Datem del Marañon",["Barranca","Cahuapanas","Manseriche","Morona","Pastaza","Andoas"]],["08","Maynas",["Putumayo","Rosa Panduro","Teniente Manuel Clavero","Yaguas"]]]],
+["17","Madre de Dios",[["01","Tambopata",["Tambopata","Inambari","Las Piedras","Laberinto"]],["02","Manu",["Manu","Fitzcarrald","Madre de Dios","Huepetuhe"]],["03","Tahuamanu",["Iñapari","Iberia","Tahuamanu"]]]],
+["18","Moquegua",[["01","Mariscal Nieto",["Moquegua","Carumas","Cuchumbaya","Samegua","San Cristóbal","Torata"]],["02","General Sánchez Cerro",["Omate","Chojata","Coalaque","Ichuña","La Capilla","Lloque","Matalaque","Puquina","Quinistaquillas","Ubinas","Yunga"]],["03","Ilo",["Ilo","El Algarrobal","Pacocha"]]]],
+["19","Pasco",[["01","Pasco",["Chaupimarca","Huachon","Huariaca","Huayllay","Ninacaca","Pallanchacra","Paucartambo","San Francisco de Asís de Yarusyacan","Simon Bolivar","Ticlacayan","Tinyahuarco","Vicco","Yanacancha"]],["02","Daniel Alcides Carrión",["Yanahuanca","Chacayan","Goyllarisquizga","Paucar","San Pedro de Pillao","Santa Ana de Tusi","Tapuc","Vilcabamba"]],["03","Oxapampa",["Oxapampa","Chontabamba","Huancabamba","Palcazu","Pozuzo","Puerto Bermúdez","Villa Rica","Constitución"]]]],
+["20","Piura",[["01","Piura",["Piura","Castilla","Catacaos","Cura Mori","El Tallan","La Arena","La Union","Las Lomas","Tambo Grande","26 de Octubre"]],["02","Ayabaca",["Ayabaca","Frias","Jilili","Lagunas","Montero","Pacaipampa","Paimas","Sapillica","Sicchez","Suyo"]],["03","Huancabamba",["Huancabamba","Canchaque","El Carmen de La Frontera","Huarmaca","Lalaquiz","San Miguel de El Faique","Sondor","Sondorillo"]],["04","Morropon",["Chulucanas","Buenos Aires","Chalaco","La Matanza","Morropon","Salitral","San Juan de Bigote","Santa Catalina de Mossa","Santo Domingo","Yamango"]],["05","Paita",["Paita","Amotape","Arenal","Colan","La Huaca","Tamarindo","Vichayal"]],["06","Sullana",["Sullana","Bellavista","Ignacio Escudero","Lancones","Marcavelica","Miguel Checa","Querecotillo","Salitral"]],["07","Talara",["Pariñas","El Alto","La Brea","Lobitos","Los Organos","Mancora"]],["08","Sechura",["Sechura","Bellavista de La Union","Bernal","Cristo Nos Valga","Vice","Rinconada Llicuar"]]]],
+["21","Puno",[["01","Puno",["Puno","Acora","Amantani","Atuncolla","Capachica","Chucuito","Coata","Huata","Mañazo","Paucarcolla","Pichacani","Plateria","San Antonio","Tiquillaca","Vilque"]],["02","Azángaro",["Azángaro","Achaya","Arapa","Asillo","Caminaca","Chupa","Jose Domingo Choquehuanca","Muñani","Potoni","Saman","San Anton","San Jose","San Juan de Salinas","Santiago de Pupuja","Tirapata"]],["03","Carabaya",["Macusani","Ajoyani","Ayapata","Coasa","Corani","Crucero","Ituata","Ollachea","San Gaban","Usicayos"]],["04","Chucuito",["Juli","Desaguadero","Huacullani","Kelluyo","Pisacoma","Pomata","Zepita"]],["05","El Collao",["Ilave","Capazo","Pilcuyo","Santa Rosa","Conduriri"]],["06","Huancane",["Huancane","Cojata","Huatasani","Inchupalla","Pusi","Rosaspata","Taraco","Vilque Chico"]],["07","Lampa",["Lampa","Cabanilla","Calapuja","Nicasio","Ocuviri","Palca","Paratia","Pucara","Santa Lucia","Vilavila"]],["08","Melgar",["Ayaviri","Antauta","Cupi","Llalli","Macari","Nuñoa","Orurillo","Santa Rosa","Umachiri"]],["09","Moho",["Moho","Conima","Huayrapata","Tilali"]],["10","San Antonio de Putina",["Putina","Ananea","Pedro Vilca Apaza","Quilcapuncu","Sina"]],["11","San Román",["Juliaca","Cabana","Cabanillas","Caracoto","San Miguel"]],["12","Sandia",["Sandia","Cuyocuyo","Limbani","Patambuco","Phara","Quiaca","San Juan del Oro","Yanahuaya","Alto Inambari","San Pedro de Putina Punco"]],["13","Yunguyo",["Yunguyo","Anapia","Copani","Cuturapi","Ollaraya","Tinicachi","Unicachi"]]]],
+["22","San Martín",[["01","Moyobamba",["Moyobamba","Calzada","Habana","Jepelacio","Soritor","Yantalo"]],["02","San Martín",["Bellavista","Alto Biavo","Bajo Biavo","Huallaga","San Pablo","San Rafael"]],["03","El Dorado",["San Jose de Sisa","Agua Blanca","San Martín","Santa Rosa","Shatoja"]],["04","Huallaga",["Saposoa","Alto Saposoa","El Eslabón","Piscoyacu","Sacanche","Tingo de Saposoa"]],["05","Lamas",["Lamas","Alonso de Alvarado","Barranquita","Caynarachi","Cuñumbuqui","Pinto Recodo","Rumisapa","San Roque de Cumbaza","Shanao","Tabalosos","Zapatero"]],["06","Mariscal Cáceres",["Juanjuí","Campanilla","Huicungo","Pachiza","Pajarillo"]],["07","Picota",["Picota","Buenos Aires","Caspisapa","Pilluana","Pucacaca","San Cristóbal","San Hilarión","Shamboyacu","Tingo de Ponasa","Tres Unidos"]],["08","Rioja",["Rioja","Awajun","Elías Soplin Vargas","Nueva Cajamarca","Pardo Miguel","Posic","San Fernando","Yorongos","Yuracyacu"]],["09","San Martín",["Tarapoto","Alberto Leveau","Cacatachi","Chazuta","Chipurana","El Porvenir","Huimbayoc","Juan Guerra","La Banda de Shilcayo","Morales","Papaplaya","San Antonio","Sauce","Shapaja"]],["10","Tocache",["Tocache","Nuevo Progreso","Polvora","Shunte","Uchiza"]]]],
+["23","Tacna",[["01","Tacna",["Tacna","Alto de La Alianza","Calana","Ciudad Nueva","Inclan","Pachia","Palca","Pocollay","Sama","Coronel Gregorio Albarracín Lanchipa","La Yarada-Los Palos"]],["02","Candarave",["Candarave","Cairani","Camilaca","Curibaya","Huanuara","Quilahuani"]],["03","Jorge Basadre",["Locumba","Ilabaya","Ite"]],["04","Tarata",["Tarata","Héroes Albarracín","Estique","Estique-Pampa","Sitajara","Susapaya","Tarucachi","Ticaco"]]]],
+["24","Tumbes",[["01","Tumbes",["Tumbes","Corrales","La Cruz","Pampas de Hospital","San Jacinto","San Juan de La Virgen"]],["02","Contralmirante Villa",["Zorritos","Casitas","Canoas de Punta Sal"]],["03","Zarumilla",["Zarumilla","Aguas Verdes","Matapalo","Papayal"]]]],
+["25","Ucayali",[["01","Coronel Portillo",["Calleria","Campoverde","Iparia","Masisea","Yarinacocha","Nueva Requena","Manantay"]],["02","Atalaya",["Raymondi","Sepahua","Tahuania","Yurua"]],["03","Padre Abad",["Padre Abad","Irazola","Curimana","Neshuya","Alexander Von Humboldt"]],["04","Purús",["Purús"]]]]
+];
+var GEO={
+"PE":[
+[
+-69.96,-4.24,-69.97,-4.3,-70,-4.33,-70.05,-4.33,-70.13,-4.29,-70.18,-4.3,-70.24,-4.3,-70.32,-4.25,-70.34,-4.19,-70.4,-4.15,-70.53,-4.17,-70.63,-4.17,
+-70.72,-4.16,-70.8,-4.17,-70.86,-4.23,-70.92,-4.3,-70.97,-4.35,-71.15,-4.39,-71.24,-4.39,-71.32,-4.42,-71.44,-4.44,-71.52,-4.47,-71.67,-4.49,-71.84,-4.5,
+-71.94,-4.55,-71.98,-4.57,-72.08,-4.64,-72.26,-4.75,-72.35,-4.79,-72.47,-4.9,-72.61,-5.01,-72.7,-5.07,-72.83,-5.09,-72.89,-5.12,-72.91,-5.16,-72.9,-5.2,
+-72.92,-5.3,-72.96,-5.5,-72.97,-5.59,-72.98,-5.63,-73.07,-5.79,-73.16,-5.93,-73.21,-6.03,-73.24,-6.1,-73.2,-6.16,-73.17,-6.26,-73.14,-6.34,-73.13,-6.4,
+-73.14,-6.47,-73.18,-6.53,-73.24,-6.56,-73.32,-6.58,-73.5,-6.68,-73.69,-6.83,-73.76,-6.91,-73.78,-6.97,-73.81,-7.08,-73.79,-7.13,-73.76,-7.17,-73.72,-7.26,
+-73.72,-7.31,-73.75,-7.34,-73.81,-7.34,-73.85,-7.35,-73.89,-7.37,-73.93,-7.37,-73.96,-7.38,-73.96,-7.42,-73.95,-7.46,-73.96,-7.51,-73.98,-7.54,-73.98,-7.59,
+-73.95,-7.61,-73.9,-7.66,-73.82,-7.74,-73.77,-7.75,-73.72,-7.78,-73.72,-7.83,-73.73,-7.88,-73.77,-7.9,-73.78,-7.94,-73.72,-7.98,-73.68,-8.02,-73.64,-8.07,
+-73.61,-8.14,-73.61,-8.19,-73.57,-8.25,-73.55,-8.3,-73.55,-8.35,-73.49,-8.39,-73.44,-8.43,-73.4,-8.46,-73.36,-8.48,-73.35,-8.51,-73.36,-8.57,-73.3,-8.65,
+-73.2,-8.72,-73.12,-8.81,-73.07,-8.88,-72.97,-8.99,-72.97,-9.12,-73.09,-9.27,-73.21,-9.41,-73.01,-9.41,-72.81,-9.41,-72.6,-9.45,-72.46,-9.49,-72.38,-9.51,
+-72.32,-9.56,-72.29,-9.63,-72.27,-9.69,-72.26,-9.77,-72.17,-9.84,-72.18,-9.91,-72.18,-10,-72.14,-10.01,-71.89,-10.01,-71.61,-10.01,-71.34,-9.99,-71.24,-9.97,
+-71.12,-9.85,-71.04,-9.82,-70.97,-9.77,-70.88,-9.67,-70.81,-9.63,-70.76,-9.57,-70.67,-9.52,-70.64,-9.48,-70.61,-9.46,-70.54,-9.44,-70.57,-9.49,-70.59,-9.54,
+-70.6,-9.62,-70.57,-9.71,-70.59,-9.77,-70.64,-9.82,-70.64,-9.97,-70.64,-10.18,-70.64,-10.36,-70.64,-10.59,-70.64,-10.84,-70.64,-11.01,-70.59,-10.98,-70.53,-10.95,
+-70.45,-11.02,-70.39,-11.06,-70.34,-11.07,-70.29,-11.06,-70.22,-11.05,-70.07,-10.98,-69.96,-10.93,-69.84,-10.93,-69.67,-10.95,-69.58,-10.95,-69.45,-11.17,-69.36,-11.33,
+-69.26,-11.51,-69.17,-11.65,-69.05,-11.88,-68.94,-12.07,-68.82,-12.27,-68.69,-12.5,-68.73,-12.56,-68.76,-12.61,-68.76,-12.69,-68.81,-12.73,-68.87,-12.76,-68.94,-12.82,
+-68.98,-12.88,-68.98,-12.96,-68.97,-13.38,-68.98,-13.5,-69.02,-13.59,-69.05,-13.64,-69.08,-13.68,-69.02,-13.78,-68.97,-13.98,-68.94,-14.01,-68.89,-14.09,-68.87,-14.17,
+-68.97,-14.23,-69,-14.27,-69.01,-14.38,-69.05,-14.42,-69.12,-14.47,-69.16,-14.53,-69.2,-14.57,-69.23,-14.6,-69.25,-14.67,-69.28,-14.75,-69.36,-14.8,-69.37,-14.89,
+-69.37,-14.96,-69.33,-15.04,-69.19,-15.2,-69.17,-15.24,-69.26,-15.33,-69.3,-15.4,-69.42,-15.6,-69.42,-15.64,-69.39,-15.74,-69.22,-16.15,-69.19,-16.18,-69.13,-16.22,
+-69.05,-16.22,-68.91,-16.26,-68.85,-16.31,-68.86,-16.35,-68.93,-16.39,-69.01,-16.43,-69.03,-16.48,-69.04,-16.54,-69.02,-16.64,-69.05,-16.67,-69.13,-16.71,-69.2,-16.77,
+-69.27,-16.86,-69.38,-17,-69.42,-17.04,-69.44,-17.09,-69.5,-17.1,-69.63,-17.2,-69.64,-17.25,-69.63,-17.3,-69.57,-17.33,-69.52,-17.39,-69.51,-17.46,-69.51,-17.51,
+-69.59,-17.57,-69.68,-17.65,-69.81,-17.66,-69.85,-17.7,-69.84,-17.78,-69.8,-17.9,-69.8,-17.99,-69.84,-18.09,-69.93,-18.21,-70.06,-18.28,-70.18,-18.32,-70.28,-18.32,
+-70.38,-18.33,-70.42,-18.35,-70.49,-18.28,-70.82,-18.05,-70.94,-17.93,-71.06,-17.88,-71.34,-17.68,-71.37,-17.62,-71.4,-17.42,-71.44,-17.37,-71.53,-17.3,-71.78,-17.2,
+-71.87,-17.15,-71.97,-17.06,-72.11,-17,-72.27,-16.88,-72.36,-16.77,-72.47,-16.71,-72.79,-16.61,-72.96,-16.52,-73.26,-16.39,-73.4,-16.3,-73.73,-16.2,-73.82,-16.15,
+-74.15,-15.91,-74.37,-15.83,-74.55,-15.7,-75.11,-15.41,-75.19,-15.32,-75.27,-15.18,-75.4,-15.09,-75.53,-14.9,-75.74,-14.78,-75.93,-14.63,-76.01,-14.5,-76.14,-14.32,
+-76.17,-14.23,-76.29,-14.13,-76.3,-13.95,-76.38,-13.86,-76.32,-13.82,-76.26,-13.8,-76.18,-13.52,-76.23,-13.37,-76.43,-13.11,-76.5,-12.98,-76.56,-12.82,-76.64,-12.73,
+-76.76,-12.53,-76.83,-12.35,-77,-12.22,-77.04,-12.17,-77.06,-12.11,-77.15,-12.06,-77.16,-11.92,-77.22,-11.66,-77.31,-11.53,-77.63,-11.29,-77.64,-11.19,-77.67,-11.02,
+-77.74,-10.84,-78.09,-10.26,-78.19,-10.09,-78.28,-9.81,-78.36,-9.65,-78.45,-9.37,-78.58,-9.16,-78.67,-8.97,-78.76,-8.74,-78.76,-8.62,-78.93,-8.41,-79.01,-8.21,
+-79.16,-8.05,-79.31,-7.92,-79.38,-7.84,-79.59,-7.42,-79.62,-7.3,-79.76,-7.07,-79.9,-6.9,-79.99,-6.77,-80.11,-6.65,-80.81,-6.28,-81.06,-6.13,-81.14,-6.06,
+-81.18,-5.94,-81.16,-5.88,-81.09,-5.81,-80.99,-5.86,-80.93,-5.84,-80.88,-5.76,-80.88,-5.63,-80.94,-5.47,-81.17,-5.17,-81.15,-5.1,-81.11,-5.03,-81.19,-4.88,
+-81.29,-4.76,-81.34,-4.67,-81.28,-4.32,-81.23,-4.23,-80.89,-3.88,-80.8,-3.73,-80.65,-3.64,-80.5,-3.5,-80.33,-3.39,-80.3,-3.41,-80.27,-3.42,-80.27,-3.46,
+-80.26,-3.49,-80.25,-3.52,-80.24,-3.58,-80.22,-3.61,-80.22,-3.65,-80.22,-3.71,-80.22,-3.79,-80.18,-3.88,-80.19,-3.91,-80.23,-3.92,-80.27,-3.95,-80.3,-4,
+-80.36,-4,-80.44,-3.98,-80.49,-4.01,-80.51,-4.07,-80.5,-4.12,-80.49,-4.17,-80.46,-4.21,-80.35,-4.21,-80.44,-4.34,-80.49,-4.39,-80.48,-4.43,-80.42,-4.46,
+-80.38,-4.46,-80.29,-4.42,-80.23,-4.35,-80.2,-4.31,-80.14,-4.3,-80.06,-4.33,-79.96,-4.39,-79.84,-4.45,-79.8,-4.48,-79.71,-4.47,-79.64,-4.46,-79.58,-4.5,
+-79.52,-4.54,-79.5,-4.67,-79.45,-4.77,-79.4,-4.84,-79.33,-4.93,-79.27,-4.96,-79.19,-4.96,-79.08,-4.99,-79.03,-4.97,-78.99,-4.91,-78.98,-4.87,-78.92,-4.86,
+-78.91,-4.82,-78.93,-4.77,-78.91,-4.71,-78.86,-4.67,-78.74,-4.59,-78.69,-4.56,-78.67,-4.52,-78.65,-4.46,-78.66,-4.42,-78.68,-4.38,-78.68,-4.33,-78.65,-4.25,
+-78.6,-4.16,-78.57,-4.04,-78.55,-3.99,-78.51,-3.95,-78.49,-3.9,-78.47,-3.84,-78.42,-3.78,-78.42,-3.71,-78.4,-3.67,-78.4,-3.59,-78.35,-3.43,-78.35,-3.4,
+-78.28,-3.4,-78.25,-3.44,-78.24,-3.47,-78.19,-3.49,-78.16,-3.46,-78.16,-3.43,-78.19,-3.4,-78.18,-3.35,-78.13,-3.28,-78.07,-3.21,-77.94,-3.05,-77.86,-2.98,
+-77.66,-2.91,-77.51,-2.86,-77.36,-2.81,-77.16,-2.74,-76.88,-2.64,-76.68,-2.56,-76.5,-2.43,-76.36,-2.33,-76.24,-2.24,-76.09,-2.13,-75.89,-1.89,-75.74,-1.73,
+-75.64,-1.61,-75.57,-1.53,-75.51,-1.32,-75.45,-1.07,-75.42,-0.96,-75.41,-0.92,-75.38,-0.94,-75.35,-0.97,-75.31,-0.97,-75.27,-0.97,-75.28,-0.71,-75.28,-0.65,-75.26,-0.59,-75.26,-0.55,-75.33,-0.51,-75.43,-0.41,-75.47,-0.32,-75.49,-0.25,-75.56,-0.2,-75.63,-0.16,-75.63,-0.12,-75.58,-0.12,-75.48,-0.16,-75.4,-0.15,
+-75.34,-0.14,-75.29,-0.11,-75.22,-0.04,-75.18,-0.04,-75.14,-0.05,-75.06,-0.12,-75,-0.16,-74.94,-0.19,-74.89,-0.2,-74.84,-0.2,-74.8,-0.2,-74.78,-0.24,
+-74.76,-0.3,-74.69,-0.33,-74.62,-0.37,-74.55,-0.43,-74.52,-0.47,-74.46,-0.52,-74.42,-0.58,-74.37,-0.69,-74.35,-0.77,-74.33,-0.81,-74.34,-0.85,-74.28,-0.93,
+-74.25,-0.97,-74.18,-1,-74.05,-1.03,-73.99,-1.1,-73.93,-1.13,-73.86,-1.2,-73.81,-1.22,-73.73,-1.21,-73.67,-1.25,-73.61,-1.32,-73.58,-1.4,-73.52,-1.45,
+-73.49,-1.54,-73.53,-1.64,-73.5,-1.69,-73.44,-1.74,-73.35,-1.78,-73.27,-1.77,-73.22,-1.79,-73.2,-1.83,-73.18,-1.88,-73.14,-2,-73.13,-2.08,-73.16,-2.16,
+-73.17,-2.21,-73.15,-2.28,-73.07,-2.31,-72.99,-2.34,-72.94,-2.39,-72.89,-2.41,-72.81,-2.41,-72.72,-2.39,-72.66,-2.36,-72.63,-2.35,-72.59,-2.37,-72.5,-2.4,
+-72.39,-2.43,-72.3,-2.41,-72.22,-2.4,-72.14,-2.38,-72.05,-2.32,-71.98,-2.33,-71.93,-2.29,-71.87,-2.23,-71.8,-2.17,-71.75,-2.15,-71.67,-2.18,-71.56,-2.22,
+-71.49,-2.28,-71.45,-2.29,-71.4,-2.33,-71.3,-2.33,-71.2,-2.31,-71.11,-2.25,-71.03,-2.22,-70.97,-2.21,-70.92,-2.22,-70.71,-2.34,-70.65,-2.41,-70.58,-2.42,
+-70.52,-2.45,-70.42,-2.49,-70.36,-2.53,-70.3,-2.55,-70.25,-2.61,-70.17,-2.64,-70.09,-2.66,-70.07,-2.7,-70.07,-2.75,-70.15,-2.86,-70.29,-3.09,-70.42,-3.29,
+-70.62,-3.61,-70.74,-3.78,-70.53,-3.87,-70.49,-3.87,-70.42,-3.85,-70.38,-3.82,-70.34,-3.82,-70.3,-3.84,-70.24,-3.88,-70.2,-4,-70.17,-4.05,-70.09,-4.09,
+-70.02,-4.16,-69.96,-4.24
+]
+],
+"EC":[
+[
+-75.29,-0.11,-75.48,-0.16,-75.63,-0.12,-75.49,-0.25,-75.43,-0.41,-75.33,-0.51,-75.28,-0.65,-75.25,-0.95,-75.38,-0.94,-75.45,-1.07,-75.51,-1.32,-75.57,-1.53,
+-75.74,-1.73,-75.89,-1.89,-76.09,-2.13,-76.24,-2.24,-76.36,-2.33,-76.5,-2.43,-76.68,-2.56,-76.88,-2.64,-77.16,-2.74,-77.36,-2.81,-77.51,-2.86,-77.66,-2.91,
+-77.86,-2.98,-78.07,-3.21,-78.18,-3.35,-78.19,-3.49,-78.28,-3.4,-78.4,-3.59,-78.42,-3.78,-78.49,-3.9,-78.57,-4.04,-78.6,-4.16,-78.68,-4.33,-78.65,-4.46,
+-78.74,-4.59,-78.86,-4.67,-78.93,-4.77,-78.99,-4.91,-79.19,-4.96,-79.33,-4.93,-79.45,-4.77,-79.52,-4.54,-79.64,-4.46,-79.8,-4.48,-79.96,-4.39,-80.14,-4.3,
+-80.29,-4.42,-80.42,-4.46,-80.44,-4.34,-80.35,-4.21,-80.49,-4.17,-80.49,-4.01,-80.36,-4,-80.23,-3.92,-80.22,-3.79,-80.22,-3.65,-80.25,-3.52,-80.3,-3.41,
+-80.16,-3.32,-80.03,-3.23,-79.92,-3.09,-79.82,-2.78,-79.73,-2.58,-79.82,-2.36,-79.84,-2.17,-79.88,-2.42,-79.93,-2.55,-80.01,-2.35,-80.13,-2.53,-80.25,-2.63,
+-80.38,-2.67,-80.69,-2.4,-80.84,-2.35,-80.93,-2.27,-80.87,-2.14,-80.76,-1.94,-80.83,-1.63,-80.8,-1.38,-80.9,-1.08,-80.84,-0.98,-80.62,-0.9,-80.51,-0.68,
+-80.36,-0.62,-80.47,-0.44,-80.32,-0.17,-80.14,-0.01,-80.05,0.16,-80.02,0.41,-80.06,0.59,-80.09,0.79,-79.9,0.86,-79.8,0.92,-79.61,0.97,-79.47,1.06,
+-79.23,1.1,-78.9,1.21,-78.86,1.46,-78.74,1.36,-78.59,1.24,-78.31,1.05,-78.18,0.97,-78.04,0.9,-77.83,0.83,-77.7,0.84,-77.65,0.72,-77.52,0.66,
+-77.42,0.42,-77.29,0.36,-77.16,0.35,-77,0.3,-76.83,0.25,-76.68,0.27,-76.5,0.23,-76.41,0.38,-76.31,0.45,-76.07,0.35,-75.97,0.25,-75.88,0.15,
+-75.78,0.09,-75.62,0.06,-75.47,-0.04,-75.29,-0.11
+],
+[
+-80.13,-2.97,-80.25,-3.01,-80.25,-2.81,-80.15,-2.7,-80,-2.67,-80.01,-2.82,-80.13,-2.97
+]
+],
+"CO":[
+[
+-71.32,11.86,-71.53,11.77,-71.72,11.73,-71.96,11.67,-72.25,11.2,-72.45,11.11,-72.57,10.98,-72.69,10.84,-72.87,10.49,-72.94,10.2,-72.97,10.03,-73.01,9.79,
+-73.06,9.67,-73.14,9.55,-73.22,9.44,-73.29,9.32,-73.37,9.19,-73.19,9.19,-73.06,9.26,-72.96,9.14,-72.8,9.11,-72.73,8.85,-72.66,8.63,-72.52,8.49,
+-72.42,8.38,-72.36,8.15,-72.45,7.97,-72.46,7.81,-72.48,7.61,-72.44,7.46,-72.3,7.39,-72.16,7.25,-72.09,7.1,-71.89,6.99,-71.62,7.03,-71.46,7.03,
+-71.22,6.98,-71.01,6.99,-70.81,7.08,-70.66,7.08,-70.54,7.04,-70.39,6.97,-70.27,6.95,-70.13,6.95,-69.9,6.7,-69.74,6.5,-69.59,6.32,-69.44,6.14,
+-69.31,6.14,-69.09,6.18,-68.94,6.2,-68.74,6.16,-68.47,6.16,-68.14,6.2,-67.94,6.24,-67.73,6.28,-67.57,6.24,-67.47,6.12,-67.47,5.93,-67.57,5.83,
+-67.63,5.71,-67.64,5.56,-67.69,5.45,-67.83,5.27,-67.8,5.13,-67.82,4.93,-67.86,4.67,-67.86,4.51,-67.79,4.38,-67.78,4.2,-67.73,4.09,-67.66,3.86,
+-67.55,3.73,-67.35,3.46,-67.34,3.34,-67.51,3.19,-67.83,2.89,-67.67,2.8,-67.57,2.69,-67.39,2.56,-67.25,2.43,-67.21,2.27,-67.16,2.14,-67.13,2,
+-67.05,1.82,-66.99,1.68,-66.93,1.46,-66.89,1.29,-67.07,1.18,-67.09,1.4,-67.09,1.62,-67.21,1.84,-67.32,2.03,-67.46,2.12,-67.61,2.04,-67.71,1.92,
+-67.82,1.79,-67.93,1.75,-68.08,1.86,-68.19,1.99,-68.25,1.85,-68.18,1.72,-68.44,1.72,-68.68,1.72,-68.91,1.72,-69.12,1.72,-69.32,1.72,-69.47,1.76,
+-69.65,1.74,-69.8,1.71,-69.85,1.54,-69.85,1.31,-69.85,1.06,-69.72,1.06,-69.57,1.07,-69.44,1.04,-69.31,1.05,-69.22,0.96,-69.17,0.8,-69.15,0.66,
+-69.28,0.63,-69.42,0.7,-69.57,0.7,-69.72,0.65,-69.86,0.6,-69.99,0.59,-70.06,0.45,-70.07,0.19,-70.07,0.02,-70.07,-0.14,-69.92,-0.32,-69.75,-0.45,
+-69.63,-0.51,-69.59,-0.64,-69.61,-0.76,-69.55,-0.88,-69.45,-1,-69.41,-1.15,-69.44,-1.42,-69.48,-1.62,-69.51,-1.78,-69.55,-2.02,-69.6,-2.31,-69.67,-2.67,
+-69.73,-3.02,-69.8,-3.36,-69.85,-3.66,-69.91,-4,-69.95,-4.2,-70.09,-4.09,-70.2,-4,-70.3,-3.84,-70.42,-3.85,-70.71,-3.79,-70.62,-3.61,-70.42,-3.29,
+-70.29,-3.09,-70.15,-2.86,-70.07,-2.75,-70.17,-2.64,-70.3,-2.55,-70.42,-2.49,-70.58,-2.42,-70.71,-2.34,-70.92,-2.22,-71.11,-2.25,-71.3,-2.33,-71.45,-2.29,
+-71.56,-2.22,-71.75,-2.15,-71.87,-2.23,-71.98,-2.33,-72.14,-2.38,-72.3,-2.41,-72.5,-2.4,-72.63,-2.35,-72.81,-2.41,-72.94,-2.39,-73.07,-2.31,-73.17,-2.21,
+-73.13,-2.08,-73.18,-1.88,-73.27,-1.77,-73.44,-1.74,-73.53,-1.64,-73.52,-1.45,-73.61,-1.32,-73.73,-1.21,-73.86,-1.2,-73.99,-1.1,-74.18,-1,-74.28,-0.93,
+-74.33,-0.81,-74.37,-0.69,-74.46,-0.52,-74.55,-0.43,-74.69,-0.33,-74.78,-0.24,-74.94,-0.19,-75.06,-0.12,-75.18,-0.04,-75.29,-0.11,-75.47,-0.04,-75.62,0.06,
+-75.78,0.09,-75.88,0.15,-75.97,0.25,-76.07,0.35,-76.27,0.44,-76.39,0.41,-76.43,0.26,-76.6,0.24,-76.73,0.27,-76.92,0.27,-77.11,0.35,-77.29,0.36,
+-77.42,0.42,-77.47,0.64,-77.6,0.69,-77.7,0.84,-77.83,0.83,-78.04,0.9,-78.18,0.97,-78.31,1.05,-78.51,1.2,-78.68,1.28,-78.83,1.43,-79.03,1.62,
+-78.96,1.75,-78.79,1.85,-78.58,1.77,-78.55,1.92,-78.63,2.06,-78.62,2.31,-78.53,2.42,-78.42,2.48,-78.3,2.51,-78.12,2.49,-77.99,2.57,-77.9,2.7,
+-77.78,2.79,-77.67,2.88,-77.7,3.01,-77.56,3.08,-77.47,3.23,-77.42,3.34,-77.32,3.47,-77.24,3.59,-77.08,3.91,-77.21,3.87,-77.25,4.04,-77.36,3.94,
+-77.43,4.06,-77.41,4.2,-77.51,4.26,-77.41,4.35,-77.33,4.47,-77.31,4.59,-77.29,4.72,-77.34,4.84,-77.37,5.08,-77.36,5.22,-77.4,5.42,-77.54,5.54,
+-77.32,5.68,-77.25,5.78,-77.34,6,-77.47,6.18,-77.4,6.27,-77.36,6.5,-77.44,6.69,-77.6,6.84,-77.68,6.96,-77.8,7.14,-77.9,7.23,-77.83,7.44,
+-77.74,7.54,-77.77,7.67,-77.62,7.56,-77.35,7.71,-77.34,7.84,-77.22,7.93,-77.28,8.19,-77.38,8.35,-77.48,8.5,-77.39,8.64,-77.26,8.49,-77.13,8.4,
+-76.99,8.25,-76.89,8.13,-76.92,7.97,-76.79,7.93,-76.77,8.31,-76.82,8.47,-76.92,8.57,-76.8,8.64,-76.69,8.69,-76.28,8.99,-76.14,9.27,-76.03,9.37,
+-75.9,9.43,-75.76,9.41,-75.64,9.45,-75.63,9.66,-75.64,9.84,-75.59,9.99,-75.6,10.12,-75.55,10.33,-75.49,10.53,-75.28,10.73,-75.12,10.87,-74.92,11.06,
+-74.45,10.99,-74.33,11,-74.49,10.93,-74.46,10.79,-74.3,10.95,-74.22,11.11,-74.2,11.27,-74.06,11.34,-73.91,11.31,-73.68,11.27,-73.31,11.3,-72.72,11.71,
+-72.45,11.8,-72.28,11.89,-72.16,12.06,-72.14,12.19,-71.97,12.24,-71.71,12.42,-71.49,12.43,-71.26,12.33,-71.16,12.16,-71.28,11.92
+]
+],
+"CL":[
+[
+-70.42,-18.35,-70.28,-18.32,-70.06,-18.28,-69.93,-18.21,-69.84,-18.09,-69.8,-17.9,-69.84,-17.78,-69.81,-17.66,-69.68,-17.65,-69.59,-17.57,-69.36,-17.77,-69.31,-17.94,
+-69.09,-18.05,-69.13,-18.2,-69.08,-18.36,-69.04,-18.55,-68.98,-18.81,-68.97,-18.97,-68.86,-19.09,-68.76,-19.16,-68.62,-19.3,-68.49,-19.38,-68.58,-19.56,-68.7,-19.72,
+-68.58,-19.86,-68.6,-20.05,-68.73,-20.07,-68.73,-20.23,-68.76,-20.38,-68.69,-20.49,-68.5,-20.61,-68.56,-20.72,-68.57,-20.85,-68.43,-20.95,-68.31,-21.13,-68.2,-21.3,
+-68.2,-21.45,-68.19,-21.62,-68.11,-21.75,-68.08,-21.98,-67.95,-22.2,-67.95,-22.33,-67.88,-22.49,-67.87,-22.63,-67.89,-22.78,-67.79,-22.88,-67.58,-22.89,-67.36,-22.86,
+-67.2,-22.82,-67.01,-23,-67.09,-23.24,-67.22,-23.63,-67.32,-23.94,-67.57,-24.12,-67.89,-24.24,-68.05,-24.31,-68.25,-24.39,-68.36,-24.5,-68.45,-24.6,-68.56,-24.75,
+-68.53,-24.9,-68.45,-25,-68.4,-25.12,-68.54,-25.24,-68.59,-25.42,-68.54,-25.65,-68.43,-26.07,-68.53,-26.28,-68.59,-26.42,-68.49,-26.67,-68.37,-26.81,-68.32,-26.97,
+-68.54,-27.08,-68.65,-27.15,-68.77,-27.12,-68.87,-27.25,-68.94,-27.41,-69.04,-27.57,-69.12,-27.74,-69.17,-27.92,-69.34,-28.07,-69.44,-28.19,-69.53,-28.29,-69.66,-28.41,
+-69.69,-28.56,-69.74,-28.78,-69.81,-29.05,-69.9,-29.15,-70,-29.25,-69.98,-29.55,-69.93,-29.77,-69.95,-30.02,-69.86,-30.12,-69.91,-30.28,-70.1,-30.39,-70.2,-30.5,
+-70.27,-30.68,-70.32,-30.83,-70.34,-30.96,-70.39,-31.12,-70.52,-31.15,-70.56,-31.32,-70.58,-31.57,-70.45,-31.84,-70.33,-31.88,-70.29,-32.03,-70.34,-32.18,-70.26,-32.31,
+-70.23,-32.43,-70.18,-32.63,-70.12,-32.81,-70.02,-32.88,-70.09,-33.03,-70.08,-33.2,-69.97,-33.28,-69.82,-33.28,-69.84,-33.47,-69.88,-33.6,-69.89,-33.73,-69.88,-33.93,
+-69.86,-34.08,-69.85,-34.22,-70,-34.28,-70.1,-34.43,-70.21,-34.58,-70.29,-34.73,-70.31,-34.85,-70.39,-35.15,-70.53,-35.22,-70.47,-35.33,-70.46,-35.45,-70.42,-35.61,
+-70.38,-35.77,-70.4,-35.97,-70.46,-36.13,-70.62,-36.21,-70.72,-36.28,-70.79,-36.41,-70.98,-36.49,-71.07,-36.58,-71.16,-36.76,-71.16,-36.92,-71.12,-37.06,-71.16,-37.23,
+-71.16,-37.39,-71.16,-37.56,-71.17,-37.76,-71.1,-37.91,-71.03,-38.04,-71.02,-38.19,-71,-38.31,-70.97,-38.45,-70.85,-38.54,-70.9,-38.68,-71.09,-38.76,-71.29,-38.85,
+-71.4,-38.93,-71.41,-39.21,-71.47,-39.4,-71.53,-39.52,-71.65,-39.59,-71.7,-39.71,-71.67,-39.83,-71.66,-40.02,-71.76,-40.09,-71.8,-40.25,-71.7,-40.34,-71.8,-40.44,
+-71.88,-40.62,-71.94,-40.79,-71.87,-40.89,-71.89,-41.29,-71.87,-41.56,-71.84,-41.77,-71.77,-41.97,-71.76,-42.1,-71.94,-42.17,-72.06,-42.21,-72.08,-42.36,-72.11,-42.52,
+-72.13,-42.65,-72.11,-42.78,-72.15,-42.99,-72.05,-43.1,-71.9,-43.15,-71.75,-43.24,-71.91,-43.35,-71.83,-43.53,-71.73,-43.65,-71.79,-43.75,-71.71,-43.86,-71.71,-43.98,
+-71.81,-44.11,-71.83,-44.24,-71.82,-44.38,-71.33,-44.43,-71.15,-44.49,-71.22,-44.63,-71.26,-44.76,-71.46,-44.75,-71.65,-44.77,-71.78,-44.77,-71.96,-44.79,-72.04,-44.9,
+-71.81,-44.93,-71.6,-44.98,-71.44,-45.17,-71.35,-45.33,-71.49,-45.44,-71.69,-45.53,-71.77,-45.72,-71.68,-45.88,-71.69,-46.04,-71.81,-46.1,-71.78,-46.28,-71.73,-46.43,
+-71.7,-46.58,-71.73,-46.71,-71.85,-46.79,-71.96,-46.94,-71.96,-47.09,-71.91,-47.2,-72.04,-47.24,-72.28,-47.45,-72.34,-47.57,-72.41,-47.69,-72.52,-47.88,-72.41,-48.02,
+-72.33,-48.11,-72.29,-48.23,-72.36,-48.37,-72.5,-48.42,-72.61,-48.52,-72.59,-48.66,-72.61,-48.79,-72.73,-48.9,-72.87,-48.94,-73.03,-49.01,-73.15,-49.19,-73.46,-49.31,
+-73.55,-49.46,-73.58,-49.58,-73.5,-49.7,-73.53,-49.91,-73.51,-50.03,-73.38,-50.23,-73.31,-50.36,-73.25,-50.56,-73.18,-50.67,-73.08,-50.76,-72.96,-50.7,-72.81,-50.64,
+-72.62,-50.65,-72.46,-50.61,-72.34,-50.68,-72.28,-50.91,-72.31,-51.03,-72.36,-51.17,-72.3,-51.3,-72.37,-51.47,-72.33,-51.62,-72.14,-51.74,-72.03,-51.82,-71.97,-51.96,
+-71.72,-51.99,-71.42,-51.99,-70.94,-52,-70.48,-52,-69.96,-52.01,-69.71,-52.08,-69.49,-52.14,-69.21,-52.14,-68.92,-52.21,-68.72,-52.25,-68.59,-52.27,-68.46,-52.29,
+-69.01,-52.26,-69.13,-52.21,-69.45,-52.27,-69.56,-52.42,-69.76,-52.5,-69.91,-52.51,-70.39,-52.66,-70.56,-52.67,-70.68,-52.71,-70.8,-52.77,-70.84,-52.89,-70.95,-53.23,
+-70.98,-53.37,-70.95,-53.57,-70.99,-53.78,-71.3,-53.88,-71.44,-53.84,-71.69,-53.8,-71.87,-53.72,-72.1,-53.67,-72.38,-53.47,-72.41,-53.35,-72.3,-53.25,-72.08,-53.25,
+-71.94,-53.23,-71.83,-53.4,-71.9,-53.5,-71.74,-53.23,-71.4,-53.11,-71.29,-53.03,-71.18,-52.92,-71.39,-52.76,-71.9,-53,-72.13,-53.06,-72.28,-53.13,-72.46,-53.25,
+-72.53,-53.37,-72.73,-53.42,-73,-53.29,-72.92,-53.12,-72.91,-52.94,-72.83,-52.82,-72.68,-52.75,-72.45,-52.81,-72.12,-52.65,-71.98,-52.65,-71.8,-52.68,-71.59,-52.66,
+-71.66,-52.56,-71.81,-52.54,-72.23,-52.52,-72.44,-52.63,-72.64,-52.53,-72.78,-52.58,-72.8,-52.71,-72.93,-52.78,-73.02,-52.89,-73.02,-53.02,-73.34,-53.06,-73.46,-52.96,
+-73.64,-52.84,-73.35,-52.75,-73.14,-52.6,-73.18,-52.49,-73.24,-52.62,-73.38,-52.6,-73.59,-52.69,-73.71,-52.66,-73.91,-52.69,-74.04,-52.58,-74.04,-52.4,-74.18,-52.32,
+-74.24,-52.2,-74.04,-52.16,-73.83,-52.23,-73.7,-52.2,-73.68,-52.08,-73.53,-52.15,-73.33,-52.17,-73.14,-52.13,-72.94,-52.05,-72.84,-51.96,-72.69,-51.99,-72.65,-52.1,
+-72.57,-52.2,-72.69,-52.33,-72.57,-52.33,-72.52,-52.22,-72.61,-52.04,-72.52,-51.89,-72.49,-51.76,-72.76,-51.57,-73.13,-51.44,-72.79,-51.61,-72.65,-51.7,-72.93,-51.86,
+-73.19,-51.99,-73.38,-52.07,-73.52,-52.04,-73.65,-51.86,-73.81,-51.8,-73.97,-51.78,-74.15,-51.71,-74.07,-51.58,-73.93,-51.62,-73.9,-51.33,-74.12,-51.2,-74.33,-51.2,
+-74.51,-51.15,-74.69,-51.09,-74.81,-51.06,-74.98,-50.88,-75.09,-50.68,-74.84,-50.68,-74.68,-50.66,-74.7,-50.54,-74.72,-50.41,-74.57,-50.38,-74.36,-50.49,-74.19,-50.78,
+-73.85,-50.94,-73.74,-50.7,-73.62,-50.65,-73.65,-50.49,-73.89,-50.78,-74.1,-50.72,-74.2,-50.61,-74.18,-50.49,-73.95,-50.51,-74.31,-50.4,-74.43,-50.35,-74.52,-50.27,
+-74.63,-50.19,-74.43,-50.07,-74.34,-49.98,-74.02,-50.02,-74.17,-49.91,-74.32,-49.78,-74.29,-49.6,-74.1,-49.56,-73.95,-49.59,-74.09,-49.43,-74.05,-49.31,-74,-49.16,
+-73.94,-49.05,-74.06,-49.11,-74.14,-49.25,-74.18,-49.4,-74.3,-49.46,-74.36,-49.35,-74.38,-49.05,-74.38,-48.79,-74.34,-48.6,-74.23,-48.52,-74.06,-48.5,-74.17,-48.43,
+-74.34,-48.49,-74.48,-48.46,-74.58,-48.27,-74.58,-48,-74.4,-48.01,-74.25,-48.05,-73.85,-48.04,-73.53,-48.2,-73.38,-48.18,-73.5,-48.11,-73.61,-47.99,-73.72,-47.66,
+-73.85,-47.87,-74.08,-47.95,-74.23,-47.97,-74.35,-47.94,-74.43,-47.8,-74.57,-47.77,-74.59,-47.62,-74.47,-47.58,-74.32,-47.67,-74.15,-47.63,-74.32,-47.53,-74.48,-47.43,
+-74.4,-47.33,-74.22,-47.21,-74.21,-47.08,-74.15,-46.97,-74.31,-46.79,-74.45,-46.77,-74.48,-46.89,-74.69,-46.86,-74.81,-46.8,-75,-46.74,-75.05,-46.63,-74.98,-46.51,
+-75.15,-46.6,-75.34,-46.65,-75.48,-46.66,-75.39,-46.86,-75.5,-46.94,-75.63,-46.86,-75.71,-46.7,-75.44,-46.48,-75.25,-46.37,-75.07,-46.23,-74.93,-46.16,-75.07,-46.01,
+-75.07,-45.88,-74.76,-45.82,-74.63,-45.85,-74.46,-45.84,-74.3,-45.8,-74.16,-45.77,-74.08,-45.64,-74.12,-45.5,-73.96,-45.4,-73.82,-45.45,-73.88,-45.57,-73.96,-45.84,
+-74.06,-45.95,-74.08,-46.13,-74.36,-46.21,-74.21,-46.24,-74.09,-46.22,-73.97,-46.15,-73.88,-45.85,-73.73,-45.81,-73.71,-45.97,-73.81,-46.38,-73.94,-46.5,-73.77,-46.5,
+-73.66,-46.3,-73.65,-46.16,-73.63,-45.99,-73.59,-45.78,-73.76,-45.7,-73.73,-45.48,-73.55,-45.48,-73.38,-45.38,-73.2,-45.35,-72.98,-45.45,-73.06,-45.36,-73.23,-45.26,
+-73.45,-45.24,-73.41,-45.1,-73.36,-44.98,-73.08,-44.92,-72.74,-44.73,-72.68,-44.59,-72.66,-44.44,-72.83,-44.4,-73,-44.29,-73.14,-44.24,-73.27,-44.17,-73.22,-43.9,
+-73.07,-43.86,-73,-43.63,-73.1,-43.46,-73.08,-43.32,-72.94,-43.21,-72.88,-43.05,-72.75,-42.99,-72.84,-42.81,-72.85,-42.67,-72.77,-42.51,-72.63,-42.51,-72.72,-42.41,
+-72.78,-42.3,-72.63,-42.2,-72.43,-42.43,-72.46,-42.21,-72.5,-41.98,-72.63,-42.01,-72.78,-41.96,-72.74,-41.8,-72.48,-41.72,-72.36,-41.65,-72.32,-41.5,-72.43,-41.65,
+-72.54,-41.69,-72.67,-41.66,-72.81,-41.54,-72.95,-41.51,-73.17,-41.75,-73.52,-41.8,-73.73,-41.74,-73.63,-41.61,-73.81,-41.52,-73.87,-41.32,-73.96,-41.12,-73.98,-40.97,
+-73.78,-40.47,-73.74,-40.26,-73.67,-40.08,-73.48,-39.85,-73.25,-39.42,-73.23,-39.22,-73.48,-38.62,-73.52,-38.51,-73.53,-38.37,-73.47,-38.13,-73.52,-37.91,-73.66,-37.7,
+-73.6,-37.48,-73.66,-37.34,-73.6,-37.19,-73.37,-37.22,-73.22,-37.17,-73.17,-37.05,-73.15,-36.88,-73.12,-36.69,-73.01,-36.64,-72.87,-36.39,-72.78,-35.98,-72.68,-35.88,
+-72.59,-35.76,-72.63,-35.59,-72.51,-35.45,-72.39,-35.24,-72.22,-35.1,-72.18,-34.92,-72.06,-34.62,-72.03,-34.42,-71.99,-34.29,-72,-34.17,-71.93,-34.02,-71.85,-33.89,
+-71.66,-33.65,-71.64,-33.52,-71.7,-33.29,-71.74,-33.09,-71.64,-33.02,-71.45,-32.66,-71.46,-32.54,-71.42,-32.39,-71.51,-32.21,-71.53,-31.81,-71.58,-31.5,-71.66,-31.17,
+-71.65,-30.99,-71.71,-30.76,-71.71,-30.63,-71.67,-30.33,-71.4,-30.14,-71.35,-29.93,-71.31,-29.65,-71.33,-29.44,-71.48,-29.2,-71.52,-28.93,-71.38,-28.78,-71.31,-28.67,
+-71.27,-28.51,-71.19,-28.38,-71.15,-28.06,-71.09,-27.81,-70.94,-27.62,-70.92,-27.31,-70.9,-27.19,-70.81,-26.95,-70.71,-26.6,-70.69,-26.42,-70.66,-26.23,-70.63,-25.99,
+-70.7,-25.86,-70.63,-25.55,-70.49,-25.38,-70.45,-25.25,-70.56,-24.78,-70.57,-24.64,-70.55,-24.33,-70.51,-24.13,-70.52,-23.97,-70.49,-23.78,-70.41,-23.66,-70.42,-23.53,
+-70.59,-23.37,-70.57,-23.17,-70.45,-23.03,-70.33,-22.85,-70.26,-22.56,-70.23,-22.19,-70.18,-21.98,-70.13,-21.64,-70.09,-21.49,-70.08,-21.36,-70.2,-20.73,-70.2,-20.53,
+-70.15,-20.23,-70.15,-19.81,-70.2,-19.61,-70.21,-19.49,-70.27,-19.27,-70.34,-18.83,-70.34,-18.6,-70.36,-18.4
+]
+],
+"BR":[
+[
+-66.88,1.22,-66.62,0.99,-66.43,0.82,-66.3,0.75,-66.06,0.79,-65.93,0.86,-65.81,0.94,-65.68,0.98,-65.57,0.93,-65.56,0.75,-65.41,0.79,-65.26,0.93,
+-65.17,1.02,-65.03,1.16,-64.91,1.22,-64.73,1.25,-64.58,1.37,-64.49,1.45,-64.31,1.46,-64.2,1.53,-64.11,1.62,-64.07,1.77,-64.04,1.91,-63.84,1.98,-63.68,2.05,-63.57,2.12,-63.43,2.16,-63.37,2.34,-63.59,2.43,-63.71,2.43,-63.92,2.45,-64.05,2.5,-64.01,2.67,-64.04,2.8,-64.14,3.01,-64.22,3.21,
+-64.23,3.34,-64.23,3.49,-64.28,3.66,-64.57,3.9,-64.67,4.01,-64.82,4.23,-64.67,4.24,-64.58,4.14,-64.26,4.14,-64.12,4.07,-64.02,3.93,-63.75,3.93,
+-63.6,3.92,-63.38,3.94,-63.14,3.76,-62.97,3.59,-62.76,3.67,-62.74,3.94,-62.66,4.04,-62.55,4.08,-62.41,4.16,-62.15,4.1,-61.82,4.2,-61.56,4.29,
+-61.48,4.4,-61.28,4.52,-61.1,4.5,-60.96,4.57,-60.91,4.69,-60.74,4.77,-60.63,4.89,-60.63,5.08,-60.71,5.19,-60.58,5.19,-60.41,5.21,-60.24,5.26,
+-60.1,5.19,-59.99,5.08,-60.01,4.91,-60.03,4.74,-60.13,4.6,-60.05,4.5,-59.91,4.48,-59.74,4.42,-59.73,4.29,-59.69,4.16,-59.62,4.02,-59.58,3.88,
+-59.67,3.75,-59.86,3.59,-59.83,3.46,-59.87,3.28,-59.95,3.09,-60,2.77,-59.96,2.59,-59.89,2.36,-59.76,2.27,-59.74,2.12,-59.75,1.96,-59.67,1.84,
+-59.6,1.72,-59.48,1.63,-59.38,1.53,-59.23,1.38,-59.1,1.34,-58.97,1.3,-58.86,1.2,-58.73,1.25,-58.61,1.28,-58.49,1.35,-58.39,1.48,-58.32,1.59,
+-58.17,1.55,-58.03,1.52,-57.98,1.65,-57.8,1.7,-57.6,1.7,-57.41,1.91,-57.27,1.96,-57.12,2.01,-57.01,1.92,-56.84,1.88,-56.69,1.91,-56.56,1.91,
+-56.39,1.92,-56.23,1.89,-56.02,1.84,-55.92,1.98,-55.96,2.1,-56.07,2.24,-56.04,2.37,-55.99,2.5,-55.73,2.41,-55.38,2.44,-55.19,2.55,-55.01,2.59,
+-54.93,2.5,-54.77,2.46,-54.66,2.33,-54.51,2.25,-54.29,2.16,-54.17,2.14,-53.94,2.23,-53.83,2.31,-53.68,2.29,-53.56,2.26,-53.43,2.28,-53.29,2.3,
+-53.18,2.21,-53.01,2.18,-52.87,2.27,-52.7,2.36,-52.58,2.53,-52.56,2.65,-52.45,2.86,-52.4,2.97,-52.36,3.12,-52.27,3.24,-52.16,3.37,-52,3.65,
+-51.93,3.78,-51.83,3.87,-51.77,3.99,-51.65,4.06,-51.56,4.23,-51.46,4.31,-51.33,4.22,-51.22,4.09,-51.08,3.67,-51.05,3.28,-50.99,3.08,-50.83,2.65,
+-50.79,2.48,-50.68,2.21,-50.61,2.1,-50.54,1.93,-50.46,1.83,-50.31,1.8,-50.05,1.73,-49.96,1.66,-49.88,1.42,-49.91,1.27,-49.94,1.12,-50.05,1.05,
+-50.29,0.84,-50.46,0.64,-50.58,0.42,-50.76,0.22,-50.91,0.16,-51.1,-0.03,-51.28,-0.08,-51.4,-0.39,-51.5,-0.51,-51.7,-0.76,-51.72,-1.02,-51.82,-1.12,
+-51.94,-1.32,-52.23,-1.36,-52.56,-1.51,-52.31,-1.56,-52.2,-1.64,-51.95,-1.59,-51.65,-1.4,-51.53,-1.35,-51.3,-1.22,-51.2,-1.14,-51.03,-1.03,-50.9,-0.94,
+-50.92,-1.12,-50.85,-1.23,-50.82,-1.38,-50.68,-1.64,-50.64,-1.82,-50.4,-2.01,-50.26,-1.92,-50.12,-1.86,-50,-1.83,-49.72,-1.93,-49.59,-1.87,-49.32,-1.73,
+-49.4,-1.97,-49.46,-2.19,-49.55,-2.52,-49.64,-2.66,-49.52,-2.6,-49.41,-2.34,-49.21,-1.92,-48.99,-1.83,-48.71,-1.49,-48.53,-1.57,-48.35,-1.48,-48.47,-1.39,
+-48.41,-1.23,-48.31,-1.04,-48.27,-0.9,-48.13,-0.79,-48.03,-0.71,-47.88,-0.69,-47.73,-0.71,-47.56,-0.67,-47.42,-0.77,-47.44,-0.65,-47.27,-0.65,-47.13,-0.75,
+-46.94,-0.74,-46.81,-0.78,-46.64,-0.92,-46.52,-1,-46.32,-1.04,-46.22,-1.1,-46.05,-1.1,-45.78,-1.25,-45.64,-1.35,-45.46,-1.36,-45.35,-1.57,-45.33,-1.72,
+-45.24,-1.63,-45.18,-1.51,-45.03,-1.51,-44.92,-1.59,-44.83,-1.67,-44.72,-1.73,-44.59,-1.84,-44.54,-2.05,-44.62,-2.15,-44.71,-2.24,-44.66,-2.37,-44.58,-2.23,
+-44.44,-2.17,-44.38,-2.37,-44.52,-2.41,-44.56,-2.52,-44.61,-2.68,-44.72,-3.14,-44.44,-2.94,-44.38,-2.74,-44.31,-2.54,-44.18,-2.47,-44.11,-2.6,-44.19,-2.7,
+-44.01,-2.64,-43.86,-2.59,-43.73,-2.52,-43.45,-2.5,-43.38,-2.38,-43.23,-2.39,-42.94,-2.46,-42.83,-2.53,-42.68,-2.59,-42.25,-2.79,-42,-2.81,-41.88,-2.75,
+-41.72,-2.81,-41.48,-2.92,-41.32,-2.94,-41.19,-2.89,-40.88,-2.87,-40.47,-2.8,-40.24,-2.81,-39.97,-2.86,-39.77,-2.99,-39.61,-3.06,-39.35,-3.2,-39.02,-3.39,
+-38.9,-3.5,-38.69,-3.65,-38.48,-3.72,-38.36,-3.88,-38.05,-4.22,-37.79,-4.4,-37.63,-4.59,-37.3,-4.71,-37.18,-4.91,-36.96,-4.94,-36.75,-5.05,-36.59,-5.1,
+-36.39,-5.08,-36.16,-5.09,-35.98,-5.05,-35.55,-5.13,-35.39,-5.25,-35.24,-5.57,-35.14,-5.92,-35.09,-6.18,-34.99,-6.39,-34.93,-6.79,-34.88,-6.91,-34.83,-7.02,
+-34.81,-7.29,-34.86,-7.53,-34.87,-7.69,-34.84,-7.87,-34.89,-8.09,-34.97,-8.41,-35.16,-8.93,-35.34,-9.23,-35.6,-9.54,-35.76,-9.7,-35.89,-9.69,-35.89,-9.85,
+-36.06,-10.08,-36.22,-10.22,-36.4,-10.48,-36.64,-10.59,-36.77,-10.67,-36.94,-10.82,-37.09,-11.05,-37.18,-11.19,-37.32,-11.38,-37.32,-11.22,-37.44,-11.39,-37.47,-11.65,
+-37.69,-12.1,-37.96,-12.48,-38.02,-12.59,-38.24,-12.84,-38.4,-12.97,-38.53,-12.76,-38.66,-12.64,-38.75,-12.75,-38.76,-12.91,-38.83,-13.03,-38.96,-13.27,-39.07,-13.48,
+-38.99,-13.61,-39.04,-13.76,-39.03,-13.99,-39.06,-14.65,-39.01,-14.94,-39,-15.25,-38.94,-15.56,-38.89,-15.84,-38.96,-16.19,-39.06,-16.5,-39.12,-16.76,-39.16,-17.04,
+-39.2,-17.18,-39.22,-17.32,-39.17,-17.64,-39.28,-17.85,-39.41,-17.92,-39.65,-18.25,-39.74,-18.64,-39.74,-18.85,-39.7,-19.28,-39.73,-19.45,-39.78,-19.57,-40,-19.74,
+-40.14,-19.97,-40.2,-20.21,-40.3,-20.29,-40.32,-20.43,-40.39,-20.57,-40.6,-20.78,-40.73,-20.85,-40.83,-21.03,-40.96,-21.24,-41.05,-21.5,-40.99,-21.92,-41.12,-22.08,
+-41.58,-22.24,-41.7,-22.31,-41.98,-22.58,-41.99,-22.74,-42.04,-22.95,-42.58,-22.94,-42.83,-22.97,-42.96,-22.97,-43.08,-22.9,-43.07,-22.77,-43.23,-22.75,-43.21,-22.88,
+-43.37,-23,-43.53,-23.05,-43.74,-23.07,-43.9,-23.1,-43.68,-23.01,-43.86,-22.91,-44.05,-22.94,-44.15,-23.01,-44.37,-23,-44.64,-23.06,-44.67,-23.21,-44.57,-23.27,
+-44.95,-23.38,-45.21,-23.58,-45.42,-23.69,-45.46,-23.8,-45.66,-23.77,-45.84,-23.76,-45.97,-23.79,-46.63,-24.11,-46.87,-24.24,-47.14,-24.49,-47.59,-24.78,-47.83,-24.95,
+-47.99,-25.04,-47.93,-25.17,-48.2,-25.42,-48.27,-25.31,-48.4,-25.27,-48.43,-25.4,-48.56,-25.45,-48.73,-25.37,-48.69,-25.49,-48.51,-25.52,-48.4,-25.6,-48.54,-25.82,
+-48.67,-25.84,-48.58,-25.94,-48.62,-26.18,-48.75,-26.27,-48.65,-26.41,-48.68,-26.61,-48.62,-26.88,-48.6,-27.06,-48.56,-27.2,-48.57,-27.37,-48.64,-27.56,-48.61,-27.83,
+-48.62,-28.08,-48.65,-28.21,-48.8,-28.44,-48.8,-28.58,-49.02,-28.7,-49.27,-28.87,-49.5,-29.08,-49.75,-29.36,-50.04,-29.8,-50.3,-30.43,-50.62,-30.9,-50.75,-31.07,
+-50.92,-31.26,-51.15,-31.48,-51.46,-31.7,-51.8,-31.9,-51.92,-31.99,-52.04,-32.12,-52.04,-31.98,-52.06,-31.83,-51.89,-31.87,-51.68,-31.78,-51.45,-31.56,-51.27,-31.48,
+-51.17,-31.34,-51.16,-31.12,-50.98,-31.09,-50.94,-30.9,-50.77,-30.81,-50.69,-30.7,-50.72,-30.43,-50.58,-30.44,-50.55,-30.32,-50.65,-30.24,-50.93,-30.37,-51.04,-30.26,
+-51.18,-30.21,-51.25,-30.06,-51.28,-30.24,-51.16,-30.36,-51.25,-30.47,-51.29,-30.59,-51.28,-30.75,-51.38,-30.85,-51.49,-30.98,-51.51,-31.11,-51.72,-31.24,-51.93,-31.34,
+-51.99,-31.49,-52.12,-31.7,-52.2,-31.89,-52.17,-32.09,-52.19,-32.22,-52.27,-32.32,-52.34,-32.44,-52.51,-32.88,-52.65,-33.14,-52.76,-33.27,-52.92,-33.4,-53.37,-33.74,
+-53.52,-33.68,-53.53,-33.5,-53.53,-33.17,-53.39,-33.01,-53.21,-32.82,-53.12,-32.74,-53.23,-32.63,-53.36,-32.58,-53.49,-32.5,-53.6,-32.4,-53.7,-32.19,-53.76,-32.06,
+-53.88,-31.99,-53.98,-31.93,-54.22,-31.86,-54.37,-31.75,-54.48,-31.62,-54.59,-31.49,-54.9,-31.39,-55.04,-31.28,-55.17,-31.28,-55.28,-31.18,-55.37,-31.05,-55.56,-30.88,
+-55.71,-30.95,-55.81,-31.04,-55.95,-31.08,-56,-30.84,-56.1,-30.71,-56.41,-30.45,-56.72,-30.19,-56.83,-30.11,-57.03,-30.11,-57.19,-30.26,-57.38,-30.28,-57.55,-30.26,
+-57.56,-30.14,-57.4,-30.03,-57.32,-29.94,-57.22,-29.78,-57.09,-29.72,-56.94,-29.59,-56.77,-29.42,-56.67,-29.29,-56.57,-29.14,-56.39,-29,-56.32,-28.85,-56.23,-28.74,
+-56.1,-28.65,-56.02,-28.53,-55.9,-28.44,-55.81,-28.36,-55.69,-28.38,-55.74,-28.26,-55.58,-28.12,-55.41,-28.04,-55.24,-27.9,-55.1,-27.87,-54.96,-27.75,-54.88,-27.6,
+-54.78,-27.53,-54.61,-27.48,-54.48,-27.46,-54.33,-27.42,-54.2,-27.29,-54.04,-27.24,-53.93,-27.16,-53.76,-26.98,-53.73,-26.81,-53.74,-26.67,-53.72,-26.44,-53.67,-26.29,
+-53.75,-26.08,-53.82,-25.96,-53.87,-25.75,-53.96,-25.65,-54.09,-25.57,-54.21,-25.53,-54.33,-25.57,-54.45,-25.62,-54.61,-25.58,-54.61,-25.43,-54.47,-25.22,-54.45,-25.07,
+-54.41,-24.87,-54.31,-24.53,-54.28,-24.31,-54.32,-24.13,-54.37,-23.97,-54.53,-23.85,-54.67,-23.83,-54.82,-23.89,-54.93,-23.95,-55.08,-24,-55.29,-24,-55.42,-23.95,
+-55.44,-23.79,-55.52,-23.63,-55.54,-23.46,-55.55,-23.32,-55.56,-23.15,-55.62,-23.03,-55.65,-22.89,-55.63,-22.74,-55.65,-22.62,-55.75,-22.51,-55.8,-22.35,-55.99,-22.28,
+-56.19,-22.28,-56.35,-22.18,-56.45,-22.08,-56.58,-22.18,-56.7,-22.23,-56.85,-22.27,-57.03,-22.24,-57.24,-22.2,-57.39,-22.2,-57.57,-22.18,-57.72,-22.1,-57.88,-22.14,
+-57.98,-22.05,-57.93,-21.91,-57.93,-21.75,-57.93,-21.6,-57.9,-21.42,-57.89,-21.27,-57.83,-21.13,-57.83,-21,-57.9,-20.87,-57.89,-20.75,-57.98,-20.66,-58.01,-20.52,
+-58.06,-20.39,-58.14,-20.24,-58.07,-20.11,-57.96,-20.04,-58.03,-19.83,-58.13,-19.74,-58.07,-19.62,-57.97,-19.42,-57.88,-19.23,-57.8,-19.08,-57.73,-18.97,-57.72,-18.73,
+-57.64,-18.48,-57.57,-18.28,-57.59,-18.12,-57.66,-17.95,-57.78,-17.67,-57.83,-17.51,-57.99,-17.51,-58.21,-17.36,-58.35,-17.28,-58.42,-17.08,-58.46,-16.91,-58.48,-16.7,
+-58.35,-16.49,-58.34,-16.34,-58.5,-16.33,-58.96,-16.31,-59.43,-16.3,-59.83,-16.28,-60.18,-16.27,-60.19,-16.13,-60.21,-15.9,-60.22,-15.74,-60.24,-15.48,-60.38,-15.32,
+-60.53,-15.14,-60.4,-15.09,-60.27,-15.09,-60.3,-14.62,-60.37,-14.42,-60.46,-14.26,-60.46,-14.13,-60.4,-14.02,-60.46,-13.86,-60.59,-13.75,-60.72,-13.67,-60.91,-13.56,
+-61.08,-13.49,-61.41,-13.53,-61.58,-13.52,-61.79,-13.53,-61.94,-13.41,-62.1,-13.24,-62.17,-13.13,-62.35,-13.13,-62.53,-13.06,-62.69,-13,-62.84,-12.95,-62.96,-12.85,
+-63.04,-12.75,-63.12,-12.65,-63.25,-12.71,-63.47,-12.6,-63.59,-12.52,-63.79,-12.47,-63.94,-12.53,-64.06,-12.51,-64.26,-12.48,-64.42,-12.44,-64.48,-12.33,-64.61,-12.2,
+-64.78,-12.06,-64.91,-12.01,-65,-11.92,-65.09,-11.74,-65.18,-11.65,-65.28,-11.51,-65.32,-11.36,-65.39,-11.25,-65.37,-11.11,-65.34,-10.89,-65.4,-10.71,-65.44,-10.59,
+-65.44,-10.45,-65.31,-10.25,-65.32,-10.03,-65.31,-9.87,-65.4,-9.71,-65.56,-9.8,-65.71,-9.77,-65.93,-9.79,-66.26,-9.83,-66.4,-9.87,-66.57,-9.9,-66.73,-9.98,
+-67.11,-10.27,-67.28,-10.32,-67.42,-10.39,-67.58,-10.51,-67.67,-10.6,-67.79,-10.69,-67.99,-10.67,-68.16,-10.79,-68.27,-10.93,-68.4,-11.02,-68.62,-11.11,-68.77,-11.1,
+-69,-10.99,-69.23,-10.96,-69.46,-10.95,-69.67,-10.95,-69.84,-10.93,-69.96,-10.93,-70.22,-11.05,-70.34,-11.07,-70.53,-10.95,-70.64,-11.01,-70.64,-10.84,-70.64,-10.59,
+-70.64,-10.36,-70.64,-10.18,-70.64,-9.97,-70.64,-9.82,-70.57,-9.71,-70.59,-9.54,-70.76,-9.57,-70.88,-9.67,-70.97,-9.77,-71.12,-9.85,-71.24,-9.97,-71.61,-10.01,
+-71.89,-10.01,-72.14,-10.01,-72.17,-9.84,-72.27,-9.69,-72.32,-9.56,-72.46,-9.49,-72.6,-9.45,-72.81,-9.41,-73.01,-9.41,-73.21,-9.41,-73.09,-9.27,-72.97,-9.12,
+-72.97,-8.99,-73.07,-8.88,-73.2,-8.72,-73.3,-8.65,-73.35,-8.51,-73.49,-8.39,-73.57,-8.25,-73.64,-8.07,-73.78,-7.94,-73.72,-7.83,-73.82,-7.74,-73.95,-7.61,
+-73.95,-7.46,-73.85,-7.35,-73.72,-7.31,-73.76,-7.17,-73.78,-6.97,-73.69,-6.83,-73.5,-6.68,-73.32,-6.58,-73.18,-6.53,-73.13,-6.4,-73.17,-6.26,-73.24,-6.1,
+-73.16,-5.93,-73.07,-5.79,-72.98,-5.63,-72.96,-5.5,-72.92,-5.3,-72.91,-5.16,-72.7,-5.07,-72.47,-4.9,-72.35,-4.79,-72.08,-4.64,-71.98,-4.57,-71.84,-4.5,
+-71.67,-4.49,-71.52,-4.47,-71.32,-4.42,-71.15,-4.39,-70.97,-4.35,-70.86,-4.23,-70.72,-4.16,-70.53,-4.17,-70.4,-4.15,-70.32,-4.25,-70.18,-4.3,-70.05,-4.33,
+-69.96,-4.24,-69.91,-4,-69.85,-3.66,-69.8,-3.36,-69.73,-3.02,-69.67,-2.67,-69.6,-2.31,-69.55,-2.02,-69.51,-1.78,-69.48,-1.62,-69.44,-1.42,-69.42,-1.25,
+-69.45,-1.09,-69.49,-0.97,-69.58,-0.84,-69.62,-0.72,-69.6,-0.6,-69.67,-0.48,-69.83,-0.38,-70.04,-0.2,-70.07,0.02,-70.07,0.19,-70.06,0.45,-70.05,0.58,
+-69.93,0.59,-69.81,0.61,-69.67,0.67,-69.53,0.72,-69.39,0.67,-69.26,0.63,-69.17,0.75,-69.19,0.9,-69.26,1.02,-69.4,1.04,-69.57,1.07,-69.72,1.06,
+-69.85,1.06,-69.85,1.31,-69.85,1.54,-69.85,1.71,-69.65,1.74,-69.47,1.76,-69.32,1.72,-69.12,1.72,-68.91,1.72,-68.68,1.72,-68.44,1.72,-68.24,1.72,
+-68.25,1.85,-68.19,1.99,-68.08,1.86,-67.99,1.75,-67.82,1.79,-67.71,1.92,-67.61,2.04,-67.5,2.11,-67.35,2.09,-67.21,1.84,-67.12,1.7,-67.09,1.4,
+-67.09,1.21,-66.88,1.22
+]
+],
+"BO":[
+[
+-69.51,-17.51,-69.57,-17.33,-69.63,-17.2,-69.5,-17.1,-69.38,-17,-69.27,-16.86,-69.13,-16.71,-69.02,-16.64,-69.03,-16.48,-68.93,-16.39,-68.91,-16.26,-69.05,-16.22,
+-69.19,-16.18,-69.39,-15.74,-69.42,-15.6,-69.3,-15.4,-69.17,-15.24,-69.33,-15.04,-69.37,-14.89,-69.28,-14.75,-69.23,-14.6,-69.12,-14.47,-69.01,-14.38,-68.97,-14.23,
+-68.89,-14.09,-68.97,-13.98,-69.02,-13.78,-69.05,-13.64,-68.98,-13.5,-68.98,-12.96,-68.94,-12.82,-68.81,-12.73,-68.76,-12.61,-68.69,-12.5,-68.82,-12.27,-68.94,-12.07,
+-69.05,-11.88,-69.17,-11.65,-69.26,-11.51,-69.36,-11.33,-69.45,-11.17,-69.58,-10.95,-69.23,-10.96,-69,-10.99,-68.85,-11.01,-68.73,-11.12,-68.5,-11.05,-68.31,-10.97,
+-68.16,-10.79,-67.99,-10.67,-67.83,-10.66,-67.67,-10.6,-67.58,-10.51,-67.42,-10.39,-67.28,-10.32,-67.11,-10.27,-66.73,-9.98,-66.57,-9.9,-66.4,-9.87,-66.26,-9.83,
+-65.93,-9.79,-65.71,-9.77,-65.56,-9.8,-65.44,-9.71,-65.34,-9.79,-65.33,-9.94,-65.3,-10.15,-65.4,-10.39,-65.45,-10.51,-65.4,-10.71,-65.34,-10.89,-65.32,-11.02,
+-65.39,-11.18,-65.34,-11.31,-65.32,-11.44,-65.21,-11.58,-65.19,-11.71,-65.04,-11.83,-64.99,-11.98,-64.83,-12.03,-64.69,-12.15,-64.51,-12.25,-64.42,-12.44,-64.26,-12.48,
+-64.06,-12.51,-63.94,-12.53,-63.79,-12.47,-63.59,-12.52,-63.47,-12.6,-63.35,-12.68,-63.18,-12.67,-63.04,-12.75,-62.96,-12.85,-62.84,-12.95,-62.69,-13,-62.53,-13.06,
+-62.35,-13.13,-62.17,-13.13,-62.1,-13.24,-61.94,-13.41,-61.79,-13.53,-61.58,-13.52,-61.41,-13.53,-61.13,-13.5,-60.91,-13.56,-60.72,-13.67,-60.59,-13.75,-60.46,-13.86,
+-60.4,-14.02,-60.46,-14.13,-60.46,-14.26,-60.37,-14.42,-60.34,-14.57,-60.27,-15.09,-60.4,-15.09,-60.58,-15.1,-60.38,-15.32,-60.24,-15.48,-60.22,-15.74,-60.21,-15.9,
+-60.19,-16.13,-60.18,-16.27,-59.83,-16.28,-59.43,-16.3,-58.96,-16.31,-58.54,-16.33,-58.38,-16.28,-58.35,-16.41,-58.47,-16.65,-58.46,-16.91,-58.42,-17.08,-58.39,-17.23,
+-58.21,-17.36,-57.99,-17.51,-57.83,-17.51,-57.78,-17.67,-57.66,-17.95,-57.59,-18.12,-57.49,-18.22,-57.64,-18.48,-57.72,-18.73,-57.78,-18.91,-57.72,-19.04,-57.88,-19.23,
+-57.97,-19.42,-58.07,-19.62,-58.13,-19.74,-58.03,-19.83,-57.86,-19.98,-58.02,-20.06,-58.16,-20.16,-58.14,-20,-58.16,-19.85,-58.47,-19.65,-58.74,-19.49,-59.09,-19.29,
+-59.54,-19.29,-60.01,-19.3,-60.45,-19.39,-60.89,-19.48,-61.09,-19.52,-61.51,-19.61,-61.76,-19.65,-61.82,-19.81,-61.92,-20.06,-62.01,-20.2,-62.12,-20.35,-62.28,-20.56,
+-62.28,-20.82,-62.28,-21.07,-62.39,-21.41,-62.48,-21.7,-62.57,-21.99,-62.63,-22.18,-62.82,-22.05,-63.27,-22,-63.68,-22,-63.82,-22,-63.97,-22.07,-64.13,-22.37,
+-64.21,-22.49,-64.27,-22.6,-64.31,-22.79,-64.45,-22.58,-64.53,-22.37,-64.6,-22.23,-64.76,-22.17,-64.99,-22.11,-65.49,-22.1,-65.68,-22.11,-65.86,-22.02,-66.06,-21.88,
+-66.17,-21.81,-66.28,-21.95,-66.36,-22.11,-66.51,-22.16,-66.64,-22.2,-66.75,-22.27,-66.8,-22.41,-66.99,-22.51,-67.06,-22.65,-67.16,-22.77,-67.36,-22.86,-67.58,-22.89,
+-67.71,-22.89,-67.88,-22.82,-67.87,-22.63,-67.88,-22.49,-67.95,-22.33,-67.95,-22.2,-67.99,-22.06,-68.1,-21.86,-68.19,-21.62,-68.2,-21.45,-68.2,-21.3,-68.31,-21.13,
+-68.43,-20.95,-68.56,-20.9,-68.57,-20.77,-68.49,-20.64,-68.69,-20.49,-68.76,-20.38,-68.73,-20.23,-68.76,-20.09,-68.6,-20.05,-68.56,-19.9,-68.7,-19.74,-68.58,-19.56,
+-68.49,-19.45,-68.55,-19.34,-68.68,-19.24,-68.86,-19.09,-68.97,-18.97,-68.98,-18.81,-69.03,-18.66,-69.06,-18.43,-69.09,-18.28,-69.14,-18.14,-69.28,-17.97,-69.36,-17.77,
+-69.49,-17.62
+]
+]
+};
+</script>
+<script>
+
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+
+var IC={
+ 'shield':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+ 'shield-check':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+ 'shield-alert':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/>',
+ 'lock':'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+ 'power':'<path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/>',
+ 'map-pin':'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+ 'crosshair':'<circle cx="12" cy="12" r="10"/><path d="M22 12h-4M6 12H2M12 6V2M12 22v-4"/>',
+ 'clock':'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+ 'car':'<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>',
+ 'bike':'<circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>',
+ 'user':'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+ 'siren':'<path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1z"/><path d="M21 12h1M18.5 4.5 18 5M2 12h1M12 2v1M4.93 4.93l.7.7"/>',
+ 'banknote':'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>', 'paperclip':'<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+ 'upload':'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
+ 'x':'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+ 'send':'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+ 'chevron-down':'<path d="m6 9 6 6 6-6"/>',
+ 'activity':'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+ 'trending-up':'<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+ 'file-text':'<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>',
+ 'help':'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>',
+ 'copy':'<rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+ 'film':'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/>',
+ 'mic':'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/>',
+ 'arrow-left':'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>'
+};
+function svg(name,cls){return '<svg class="'+(cls||'')+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[name]||'')+'</svg>'}
+[].forEach.call(document.querySelectorAll('i[data-i]'),function(el){var w=document.createElement('span');w.innerHTML=svg(el.dataset.i,el.className);el.replaceWith(w.firstChild)});
+
+
+var CEN={'01':[-6.23,-77.87],'02':[-9.53,-77.53],'03':[-13.64,-72.88],'04':[-16.40,-71.54],'05':[-13.16,-74.22],'06':[-7.16,-78.51],'07':[-12.06,-77.15],
+ '08':[-13.53,-71.97],'09':[-12.79,-74.98],'10':[-9.93,-76.24],'11':[-14.07,-75.73],'12':[-12.07,-75.21],'13':[-8.11,-79.03],'14':[-6.77,-79.84],'15':[-11.9,-76.6],
+ '16':[-3.75,-73.25],'17':[-12.60,-69.19],'18':[-17.19,-70.93],'19':[-10.68,-76.26],'20':[-5.19,-80.63],'21':[-15.84,-70.02],'22':[-6.03,-76.97],'23':[-18.01,-70.25],'24':[-3.57,-80.45],'25':[-8.38,-74.55]};
+var DEP={},PROV={},DIST={},DEPLIST=[];   
+PE.forEach(function(d){
+  DEP[d[0]]={c:d[0],n:d[1],provs:d[2]};DEPLIST.push(DEP[d[0]]);
+  d[2].forEach(function(p){
+    PROV[d[0]+p[0]]={c:d[0]+p[0],n:p[1],dists:p[2],dc:d[0]};
+    p[2].forEach(function(n,i){var pad2=function(x){return x<10?'0'+x:''+x};DIST[d[0]+p[0]+pad2(i+1)]={n:n,p:p[1],d:d[1],dc:d[0]}});
+  });
+});
+
+(function(){DIST={};PE.forEach(function(d){d[2].forEach(function(p){p[2].forEach(function(n,i){DIST[d[0]+p[0]+(i<9?'0':'')+(i+1)]={n:n,p:p[1],d:d[1],dc:d[0]}})})})})();
+function label(u){var x=DIST[u];return x?x.n+', '+x.p+' · '+x.d:'—'}
+
+
+var sDep=$('#dep'),sProv=$('#prov'),sDist=$('#district');
+function fill(sel,items,ph){sel.innerHTML='<option value="">'+ph+'</option>'+items.map(function(i){return '<option value="'+i[0]+'">'+esc(i[1])+'</option>'}).join('');sel.disabled=!items.length}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+fill(sDep,DEPLIST.map(function(d){return[d.c,d.n]}).sort(function(a,b){return a[1].localeCompare(b[1],'es')}),'Selecciona');
+function fillProvs(dc){fill(sProv,dc?DEP[dc].provs.map(function(p){return[p[0],p[1]]}).sort(function(a,b){return a[1].localeCompare(b[1],'es')}):[],dc?'Selecciona':'Primero el departamento');fillDists()}
+function fillDists(){
+  var dc=sDep.value,pc=sProv.value,p=PROV[dc+pc];
+  fill(sDist,p?p.dists.map(function(n,i){return[dc+pc+(i<9?'0':'')+(i+1),n]}).sort(function(a,b){return a[1].localeCompare(b[1],'es')}):[],p?'Selecciona':'Primero la provincia');
+}
+fillProvs('');
+
+var KEY='bts_reports_v3';
+function load(){try{var r=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(r)?r.filter(function(x){return DIST[x.u]}):[]}catch(e){return[]}}
+function save(l){try{localStorage.setItem(KEY,JSON.stringify(l));return true}catch(e){return false}}
+var mine=load();
+
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;var t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+var W_DEP={'15':30,'07':8,'13':6,'20':6,'04':6,'14':5,'08':4,'12':4,'11':3,'06':3,'21':3,'02':3,'22':2,'16':2,'25':2,'23':2,'10':2,'05':1.5,'24':1.5};
+var seed=(function(){
+  var r=rng(20260920),out=[],now=Date.now(),keys=DEPLIST.map(function(d){return d.c}),ws=keys.map(function(k){return W_DEP[k]||1}),sum=ws.reduce(function(a,b){return a+b},0),am=[20,30,50,50,80,100,100,150,200,200,300,500];
+  for(var i=0;i<520;i++){
+    var p=r()*sum,dc=keys[0];for(var k=0;k<keys.length;k++){p-=ws[k];if(p<=0){dc=keys[k];break}}
+    var provs=DEP[dc].provs,pv=(dc==='15'&&r()<.85)?provs[0]:provs[Math.floor(Math.pow(r(),2)*provs.length)];
+    var di=Math.floor(Math.pow(r(),(dc==='15'&&pv===provs[0])?1.5:2.2)*pv[2].length),u=dc+pv[0]+(di<9?'0':'')+(di+1);
+    var age=Math.pow(r(),1.7)*90*864e5;if(i<14)age=r()*20*36e5;else if(i<60)age=r()*6*864e5;
+    out.push({u:u,t:now-age,a:am[Math.floor(r()*am.length)],ev:r()<.38?1:0});
+  }
+  return out;
+})();
+function all(){return seed.concat(mine)}
+
+function pad(n){return n<10?'0'+n:''+n}
+function money(n){return 'S/ '+Math.round(n).toLocaleString('es-PE')}
+var toastT;
+function toast(msg,bad){
+  var t=$('#toast');$('#toastMsg').textContent=msg;$('#toastIc').textContent=bad?'!':'✓';
+  t.classList.toggle('bad',!!bad);t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on')},bad?4200:4800);
+}
+
+function panic(){try{sessionStorage.clear()}catch(e){}window.open('','_self');window.close();location.replace('https://www.google.com')}
+$('#exitBtn').addEventListener('click',panic);
+var lastEsc=0;document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){if(!$('#modal').hidden){closeModal();return}var n=Date.now();if(n-lastEsc<600)panic();lastEsc=n}
+});
+$('#ctaMain').addEventListener('click',function(e){e.preventDefault();$('#reporte').scrollIntoView({behavior:'smooth',block:'start'});setTimeout(function(){sDep.focus({preventScroll:true})},700)});
+
+function setNow(){var d=new Date();$('#rdate').value=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());$('#rtime').value=pad(d.getHours())+':'+pad(d.getMinutes())}
+setNow();
+
+var files=[];
+function mark(id,ok,show){var f=$(id);f.classList.toggle('bad',!ok&&show);f.classList.toggle('ok',ok&&show)}
+function vDistrict(show){var ok=!!sDist.value;mark('#f-district',ok,show);return ok}
+function vPlace(show){var ok=$('#place').value.trim().length>=4;mark('#f-place',ok,show);return ok}
+function vVeh(show){var ok=!!document.querySelector('input[name=veh]:checked');mark('#f-veh',ok,show);return ok}
+function vAmt(show){var ok=$('#amt').value.trim().length>=2;mark('#f-amt',ok,show);return ok}
+function whenMs(){var d=$('#rdate').value,t=$('#rtime').value;return d?new Date(d+'T'+(t||'00:00')).getTime():NaN}
+function vWhen(show){var ms=whenMs(),ok=!isNaN(ms)&&ms<=Date.now()+60000;$('#whenErr').style.display=(!ok&&show)?'block':'none';['#rdate','#rtime'].forEach(function(s){$(s).style.borderColor=(!ok&&show)?'#F43F5E':''});return ok}
+function progress(){var n=[vDistrict(false),vPlace(false),vVeh(false),vAmt(false)].filter(Boolean).length;$('#meter').style.width=(n/4*100)+'%'}
+sDep.addEventListener('change',function(){fillProvs(sDep.value);vDistrict(true);progress()});
+sProv.addEventListener('change',function(){fillDists();vDistrict(true);progress()});
+sDist.addEventListener('change',function(){vDistrict(true);progress()});
+$('#place').addEventListener('input',function(){vPlace(true);progress()});
+$('#place').addEventListener('blur',function(){if($('#place').value)vPlace(true)});
+$('#amt').addEventListener('input',function(){vAmt(true);progress()});
+$('#amt').addEventListener('blur',function(){if($('#amt').value)vAmt(true)});
+$('#rdate').addEventListener('input',function(){vWhen(true)});$('#rtime').addEventListener('input',function(){vWhen(true)});
+[].forEach.call(document.querySelectorAll('input[name=veh]'),function(r){r.addEventListener('change',function(){vVeh(true);progress()})});
+$('#presets').addEventListener('click',function(e){var b=e.target.closest('.pill');if(!b)return;$('#amt').value=b.dataset.v;vAmt(true);progress()});
+
+$('#gps').addEventListener('click',function(){
+  var b=$('#gps');
+  if(!navigator.geolocation){toast('Tu navegador no permite usar el GPS. Elige el lugar a mano.',true);return}
+  b.disabled=true;$('#gpsTxt').textContent='Buscando señal GPS…';
+  navigator.geolocation.getCurrentPosition(function(p){
+    var la=p.coords.latitude,lo=p.coords.longitude,best=null,bd=1e9;
+    Object.keys(CEN).forEach(function(k){var x=CEN[k][0]-la,y=CEN[k][1]-lo,q=x*x+y*y;if(q<bd){bd=q;best=k}});
+    b.disabled=false;$('#gpsTxt').textContent='Usar mi ubicación GPS actual';
+    if(la<-18.6||la>0.3||lo<-81.5||lo>-68.5){toast('Tu ubicación está fuera del Perú. Elige el lugar a mano.',true);return}
+    sDep.value=best;fillProvs(best);vDistrict(true);progress();$('#gpsTxt').textContent='Detectado: '+DEP[best].n;sProv.focus();
+    toast('Parece que estás en '+DEP[best].n+'. Confirma y elige provincia y distrito.');
+  },function(err){
+    b.disabled=false;$('#gpsTxt').textContent='Usar mi ubicación GPS actual';
+    toast(err&&err.code===1?'Permiso de ubicación denegado. Elige el lugar a mano.':'No pudimos obtener tu ubicación. Elige el lugar a mano.',true);
+  },{enableHighAccuracy:true,timeout:9000,maximumAge:30000});
+});
+
+function fileErr(m){var e=$('#fileErr');e.hidden=!m;e.textContent=m||''}
+function addFiles(list){
+  fileErr('');
+  [].forEach.call(list,function(f){
+    if(files.length>=5){fileErr('Máximo 5 archivos.');return}
+    if(!/^(image|video|audio)\//.test(f.type)){fileErr('“'+f.name+'” no es foto, video ni audio.');return}
+    if(f.size>25*1048576){fileErr('“'+f.name+'” pesa más de 25 MB.');return}
+    files.push(f);
+  });render();
+}
+function render(){
+  var ul=$('#files');ul.innerHTML='';
+  files.forEach(function(f,i){
+    var li=document.createElement('li');li.className='flex items-center gap-3 p-2 rounded-xl bg-slate-950/70 border border-slate-800 text-xs';
+    var th=f.type.indexOf('image')===0?'<img class="w-10 h-10 rounded-lg object-cover shrink-0" alt="" src="'+URL.createObjectURL(f)+'">'
+      :'<span class="w-10 h-10 rounded-lg bg-slate-800 grid place-items-center shrink-0 text-brand-purple-bright">'+svg(f.type.indexOf('video')===0?'film':'mic','w-5 h-5')+'</span>';
+    li.innerHTML=th+'<span class="flex-1 min-w-0 truncate text-slate-200">'+esc(f.name)+'</span><span class="text-slate-500 shrink-0">'+(f.size/1048576).toFixed(1)+' MB</span>'+
+      '<button type="button" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg" aria-label="Quitar '+esc(f.name)+'">'+svg('x','w-4 h-4')+'</button>';
+    li.querySelector('button').addEventListener('click',function(){files.splice(i,1);render()});ul.appendChild(li);
+  });
+}
+var drop=$('#drop');
+['dragenter','dragover'].forEach(function(v){drop.addEventListener(v,function(e){e.preventDefault();drop.classList.add('over')})});
+['dragleave','drop'].forEach(function(v){drop.addEventListener(v,function(e){e.preventDefault();drop.classList.remove('over')})});
+drop.addEventListener('drop',function(e){addFiles(e.dataTransfer.files)});
+$('#fileIn').addEventListener('change',function(e){addFiles(e.target.files);e.target.value=''});
+
+$('#anon').addEventListener('change',function(){
+  var b=$('#anonBadge');
+  if(this.checked){b.className='shrink-0 px-3 py-1.5 rounded-full bg-brand-neon/10 border border-brand-neon/40 text-brand-neon-bright text-xs font-bold inline-flex items-center gap-1.5';b.innerHTML=svg('shield-check','w-3.5 h-3.5')+'<span>Anónimo</span>'}
+  else{b.className='shrink-0 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-300 text-xs font-bold inline-flex items-center gap-1.5';b.innerHTML=svg('user','w-3.5 h-3.5')+'<span>Identificable</span>';
+    toast('Sin anonimato, el reporte podría ligarse a datos técnicos de tu dispositivo. Te recomendamos mantenerlo activo.',true)}
+});
+
+function parseAmount(t){
+  var m=t.replace(/\s/g,'').match(/(\d{1,3}(?:[.,]\d{3})+|\d+)(?:[.,](\d{1,2}))?/);if(!m)return 0;
+  var n=parseFloat(m[1].replace(/[.,]/g,'')+(m[2]?'.'+m[2]:''));if(/\$|usd|d[oó]lar/i.test(t))n*=3.75;
+  return isFinite(n)?Math.min(n,1e6):0;
+}
+var lastFocus=null;
+function openModal(code){lastFocus=document.activeElement;$('#mCode').textContent=code;$('#modal').hidden=false;$('#mClose').focus()}
+function closeModal(){$('#modal').hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus({preventScroll:true})}
+$('#mClose').addEventListener('click',closeModal);
+$('#modal').addEventListener('click',function(e){if(e.target===$('#modal'))closeModal()});
+$('#copyCode').addEventListener('click',function(){
+  var c=$('#mCode').textContent;
+  try{navigator.clipboard.writeText(c).then(function(){toast('Código copiado.')},function(){toast('No se pudo copiar. Anótalo a mano.',true)})}catch(e){toast('No se pudo copiar. Anótalo a mano.',true)}
+});
+function busy(on){$('#submitBtn').disabled=on;$('#sSpin').hidden=!on;$('#sIco').hidden=on;$('#sTxt').textContent=on?'Cifrando y enviando…':'Enviar reporte seguro'}
+$('#rf').addEventListener('submit',function(e){
+  e.preventDefault();
+  var checks=[[vDistrict(true),'#f-district'],[vPlace(true),'#f-place'],[vVeh(true),'#f-veh'],[vAmt(true),'#f-amt'],[vWhen(true),'#f-date']],bad=checks.filter(function(c){return!c[0]})[0];
+  if(bad){$(bad[1]).scrollIntoView({behavior:'smooth',block:'center'});toast('Falta completar los campos marcados en rojo.',true);return}
+  busy(true);
+  setTimeout(function(){
+  
+    mine.push({u:sDist.value,t:whenMs(),a:parseAmount($('#amt').value),v:document.querySelector('input[name=veh]:checked').value,ev:files.length?1:0,anon:$('#anon').checked});
+    var ok=save(mine),code='#BTS-'+Math.floor(1000+Math.random()*9000)+'-'+String.fromCharCode(65+Math.floor(Math.random()*26));
+    busy(false);$('#rf').reset();fillProvs('');files=[];render();
+    ['#f-district','#f-place','#f-veh','#f-amt'].forEach(function(s){$(s).classList.remove('bad','ok')});
+    $('#gpsTxt').textContent='Usar mi ubicación GPS actual';$('#anon').dispatchEvent(new Event('change'));
+    setNow();progress();refresh();openModal(code);
+    toast('¡Reporte registrado exitosamente de forma confidencial!');
+    if(!ok)setTimeout(function(){toast('No pudimos guardar en este navegador; se verá solo mientras la página siga abierta.',true)},5200);
+  },1300);
+});
+$('#wipe').addEventListener('click',function(){
+  if(!mine.length){toast('No hay reportes guardados en este dispositivo.',true);return}
+  mine=[];save(mine);refresh();toast('Reportes de este dispositivo borrados.');
+});
+
+var shown={};
+function count(id,to,fmt){
+  var el=$(id),from=shown[id]||0,t0=performance.now(),dur=900;shown[id]=to;
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){el.textContent=fmt(to);return}
+  (function step(t){var p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*e);if(p<1)requestAnimationFrame(step)})(t0);
+}
+var fInt=function(n){return Math.round(n).toLocaleString('es-PE')};
+function refresh(){
+  var a=all(),n=Date.now(),total=a.length,sum=a.reduce(function(s,r){return s+(r.a||0)},0),today=a.filter(function(r){return n-r.t<=864e5}).length,ev=a.filter(function(r){return r.ev}).length;
+  count('#cTotal',total,fInt);count('#heroTotal',total,fInt);count('#cMoney',sum,money);count('#heroMoney',sum,money);count('#heroToday',today,fInt);
+  count('#cEv',Math.round(ev/Math.max(1,total)*100),function(v){return Math.round(v)+'%'});
+  $('#cTodayTxt').textContent=today+' en las últimas 24 h';
+  var c={};a.forEach(function(r){if(n-r.t<=30*864e5)c[r.u]=(c[r.u]||0)+1});
+  var top=Object.keys(c).sort(function(x,y){return c[y]-c[x]})[0];  $('#cTop').textContent=top?DIST[top].n:'—';$('#cTopN').textContent=top?DIST[top].p+' · '+DIST[top].d+' · '+c[top]+' reportes en 30 días':'Sin datos este mes';
+  drawMap();
+}
+
+var range='week',selDep=null,cv=$('#map'),cx=cv.getContext('2d'),W=0,H=0,S=1,OX=0,OY=0,spots=[],phase=0;
+var LON0=-81.7,LAT1=0.6,LAT0=-18.7,LON1=-68.3,K=Math.cos(9*Math.PI/180);
+function proj(lat,lon){return[OX+(lon-LON0)*K*S,OY+(LAT1-lat)*S]}
+function size(){
+  var r=cv.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);
+  S=Math.min((W-16)/((LON1-LON0)*K),(H-16)/(LAT1-LAT0));OX=(W-(LON1-LON0)*K*S)/2;OY=(H-(LAT1-LAT0)*S)/2;drawMap();
+}
+function path(flat){cx.beginPath();for(var i=0;i<flat.length;i+=2){var p=proj(flat[i+1],flat[i]);i?cx.lineTo(p[0],p[1]):cx.moveTo(p[0],p[1])}cx.closePath()}
+var LC=[[0,255,135],[124,58,237],[255,77,109]],LF=['#00FF87','#B794FF','#FF4D6D'],LB=['#10B981','#7C3AED','#F43F5E'];
+var TH={dept:{day:[2,5],week:[5,15],all:[15,50]},dist:{day:[2,3],week:[2,4],all:[4,10]}};
+function lvl(v,kind){var t=TH[kind][range];return v<t[0]?0:v<t[1]?1:2}
+function counts(){var lim=range==='day'?864e5:range==='week'?7*864e5:Infinity,n=Date.now(),byD={},byU={};
+  all().forEach(function(r){if(n-r.t<=lim){var dc=r.u.slice(0,2);byD[dc]=(byD[dc]||0)+1;byU[r.u]=(byU[r.u]||0)+1}});return{d:byD,u:byU}}
+function drawMap(){
+  if(!W)return;
+  var g=cx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0B1226');g.addColorStop(1,'#120B2A');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+
+  cx.strokeStyle='rgba(120,140,220,.07)';cx.lineWidth=1;cx.beginPath();
+  for(var lo=-80;lo<=-68;lo+=4){var a=proj(LAT1,lo),b=proj(LAT0,lo);cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1])}
+  for(var la=-16;la<=0;la+=4){var c=proj(la,LON0),d=proj(la,LON1);cx.moveTo(c[0],c[1]);cx.lineTo(d[0],d[1])}cx.stroke();
+
+  ['EC','CO','BR','BO','CL'].forEach(function(k){(GEO[k]||[]).forEach(function(f){path(f);cx.fillStyle='rgba(120,140,220,.05)';cx.fill();cx.strokeStyle='rgba(120,140,220,.22)';cx.lineWidth=1;cx.stroke()})});
+
+  (GEO.PE||[]).forEach(function(f){path(f);cx.fillStyle='rgba(37,99,235,.16)';cx.fill();cx.strokeStyle='rgba(96,165,250,.85)';cx.lineWidth=1.6;cx.shadowColor='#2563EB';cx.shadowBlur=14;cx.stroke();cx.shadowBlur=0});
+  cx.fillStyle='rgba(120,160,255,.4)';cx.font='600 10px Inter,sans-serif';cx.fillText('OCÉANO PACÍFICO',10,H-12);
+
+  var C=counts(),mx=Math.max.apply(null,Object.keys(C.d).map(function(k){return C.d[k]}).concat([1]));spots=[];
+  Object.keys(C.d).forEach(function(k){var n=C.d[k],q=proj(CEN[k][0],CEN[k][1]),kk=n/mx,rad=(Math.min(W,H)/40)*(0.8+Math.sqrt(kk)*2.6);
+    spots.push({x:q[0],y:q[1],r:rad,n:n,dc:k,name:DEP[k].n,k:kk,lv:lvl(n,'dept'),col:LC[lvl(n,'dept')]})});
+  spots.slice().sort(function(a,b){return a.k-b.k}).forEach(function(s){
+    var dim=selDep&&selDep!==s.dc?.35:1,pu=1+Math.sin(phase+s.x)*.07*(s.k+.3),gr=cx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*2.1*pu);
+    gr.addColorStop(0,'rgba('+s.col+','+(.6*dim)+')');gr.addColorStop(.45,'rgba('+s.col+','+(.22*dim)+')');gr.addColorStop(1,'rgba('+s.col+',0)');
+    cx.fillStyle=gr;cx.beginPath();cx.arc(s.x,s.y,s.r*2.1*pu,0,7);cx.fill();
+    cx.globalAlpha=dim;cx.beginPath();cx.arc(s.x,s.y,Math.max(3.2,s.r*.2),0,7);cx.fillStyle=LF[s.lv];cx.shadowColor=cx.fillStyle;cx.shadowBlur=12;cx.fill();cx.shadowBlur=0;cx.globalAlpha=1;
+    if(selDep===s.dc){cx.beginPath();cx.arc(s.x,s.y,s.r*1.05,0,7);cx.strokeStyle='#fff';cx.lineWidth=1.5;cx.setLineDash([4,4]);cx.stroke();cx.setLineDash([])}
+  });
+  cx.font='600 10.5px Inter,sans-serif';cx.textAlign='center';
+  spots.slice().sort(function(a,b){return b.n-a.n}).slice(0,W<420?5:8).forEach(function(s){cx.fillStyle='rgba(232,238,251,.9)';cx.fillText(s.name,Math.min(W-30,Math.max(30,s.x)),s.y+Math.max(14,s.r*.2+13))});
+  cx.textAlign='start';
+  if(!spots.length){cx.fillStyle='rgba(154,168,199,.8)';cx.font='500 14px Inter,sans-serif';cx.textAlign='center';cx.fillText('Sin reportes en este periodo',W/2,H/2);cx.textAlign='start'}
+  ranking(C,mx);
+}
+function ranking(C,mx){
+  var h='',items;
+  if(selDep){
+    var byU=C.u,keys=Object.keys(byU).filter(function(u){return u.slice(0,2)===selDep}).sort(function(a,b){return byU[b]-byU[a]}).slice(0,8),m=keys.length?byU[keys[0]]:1;
+    $('#rankTitle').textContent='Distritos de '+DEP[selDep].n;$('#rankBack').hidden=false;
+    h=keys.length?keys.map(function(u){var v=byU[u],col=LB[lvl(v,'dist')];
+      return '<li><div class="flex justify-between text-sm"><span class="text-slate-200 font-medium truncate pr-2">'+esc(DIST[u].n)+'<span class="text-slate-500 text-xs"> · '+esc(DIST[u].p)+'</span></span><span class="text-slate-400 tabular-nums">'+v+'</span></div><div class="h-1.5 rounded bg-slate-800 mt-1.5"><div class="h-full rounded" style="width:'+Math.max(8,v/m*100)+'%;background:'+col+';box-shadow:0 0 10px '+col+'"></div></div></li>'}).join(''):'<li class="text-sm text-slate-500">Sin reportes en este periodo.</li>';
+  }else{
+    var kd=Object.keys(C.d).sort(function(a,b){return C.d[b]-C.d[a]}).slice(0,8);
+    $('#rankTitle').textContent='Departamentos con más reportes';$('#rankBack').hidden=true;
+    h=kd.length?kd.map(function(k){var v=C.d[k],col=LB[lvl(v,'dept')];
+      return '<li><button type="button" data-dc="'+k+'" class="w-full text-left rounded-lg -mx-1.5 px-1.5 py-1 hover:bg-slate-800/60 transition"><div class="flex justify-between text-sm"><span class="text-slate-200 font-medium truncate pr-2">'+esc(DEP[k].n)+'</span><span class="text-slate-400 tabular-nums">'+v+'</span></div><div class="h-1.5 rounded bg-slate-800 mt-1.5"><div class="h-full rounded" style="width:'+Math.max(8,v/mx*100)+'%;background:'+col+';box-shadow:0 0 10px '+col+'"></div></div></button></li>'}).join(''):'<li class="text-sm text-slate-500">Sin reportes en este periodo.</li>';
+  }
+  $('#rank').innerHTML=h;
+}
+function pickDep(k){selDep=(selDep===k)?null:k;drawMap()}
+$('#rank').addEventListener('click',function(e){var b=e.target.closest('[data-dc]');if(b)pickDep(b.dataset.dc)});
+$('#rankBack').addEventListener('click',function(){selDep=null;drawMap()});
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches){(function loop(){phase+=.035;if(W&&document.visibilityState==='visible')drawMap();setTimeout(function(){requestAnimationFrame(loop)},80)})()}
+var tip=$('#tip');
+function hit(e){var r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,h=null;spots.forEach(function(s){var dx=s.x-x,dy=s.y-y;if(dx*dx+dy*dy<Math.pow(Math.max(16,s.r),2))h=s});return h}
+cv.addEventListener('mousemove',function(e){var h=hit(e);if(h){tip.innerHTML='<b style="color:#00FF87">'+esc(h.name)+'</b> · '+h.n+' reporte'+(h.n===1?'':'s');tip.style.left=Math.min(W-70,Math.max(70,h.x))+'px';tip.style.top=h.y+'px';tip.classList.add('on');cv.style.cursor='pointer'}else{tip.classList.remove('on');cv.style.cursor='default'}});
+cv.addEventListener('mouseleave',function(){tip.classList.remove('on')});
+cv.addEventListener('click',function(e){var h=hit(e);if(h)pickDep(h.dc)});
+$('#seg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;range=b.dataset.r;[].forEach.call($('#seg').children,function(x){x.setAttribute('aria-pressed',x===b)});drawMap()});
+window.addEventListener('resize',size);if(window.ResizeObserver)new ResizeObserver(size).observe($('#mapbox'));
+size();refresh();progress();
+})();
+</script>
+</body>
+</html>
